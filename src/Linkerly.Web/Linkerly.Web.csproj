@@ -11,4 +11,9 @@
         <Folder Include="Shared\"/>
     </ItemGroup>
 
+
+    <ItemGroup>
+      <ProjectReference Include="..\Linkerly.Application\Linkerly.Application.csproj" />
+    </ItemGroup>
+
 </Project>
