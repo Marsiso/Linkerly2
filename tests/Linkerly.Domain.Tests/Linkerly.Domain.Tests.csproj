@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Linkerly.Domain\Linkerly.Domain.csproj" />
+        <ProjectReference Include="..\..\src\Linkerly.Domain\Linkerly.Domain.csproj"/>
     </ItemGroup>
 
 </Project>
