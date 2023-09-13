@@ -3,6 +3,7 @@ using Linkerly.Data;
 using Linkerly.Domain.Validations;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Linkerly.Web;
 
@@ -24,6 +25,8 @@ public static class ConfigurationSessions
 
 		services.AddHttpContextAccessor();
 		services.AddScoped<HttpContextAccessor>();
+
+		services.AddScoped<ISaveChangesInterceptor, Auditor>();
 
 		services.AddDbContext<CloudContext>(options =>
 		{
