@@ -1,5 +1,5 @@
 ﻿using Linkerly.Data.Application.Configurations.Common;
-using Linkerly.Domain.Application;
+using Linkerly.Domain.Application.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -21,25 +21,45 @@ public class AccessTokenEntityDatabaseMappingConfiguration : ChangeTrackingEntit
 		builder.HasIndex(token => token.UserID)
 			.IsUnique(false);
 
-		builder.Property(token => token.Subject)
+		builder.Property(token => token.Audience)
 			.IsRequired()
-			.IsUnicode(false)
+			.IsUnicode()
 			.HasMaxLength(512);
 
 		builder.Property(token => token.Issuer)
 			.IsRequired()
 			.IsUnicode()
-			.HasMaxLength(256);
+			.HasMaxLength(512);
 
 		builder.Property(token => token.Subject)
 			.IsRequired()
 			.IsUnicode(false)
 			.HasMaxLength(512);
 
+		builder.Property(token => token.Expires)
+			.IsRequired()
+			.IsUnicode(false)
+			.HasMaxLength(256);
+
+		builder.Property(token => token.IssuedAt)
+			.IsRequired()
+			.IsUnicode(false)
+			.HasMaxLength(256);
+
 		builder.Property(token => token.Email)
 			.IsRequired()
 			.IsUnicode(false)
 			.HasMaxLength(256);
+
+		builder.Property(token => token.IsEmailVerified)
+			.IsRequired()
+			.IsUnicode(false)
+			.HasMaxLength(32);
+
+		builder.Property(token => token.Name)
+			.IsRequired()
+			.IsUnicode()
+			.HasMaxLength(1024);
 
 		builder.Property(token => token.GivenName)
 			.IsRequired()
@@ -58,10 +78,7 @@ public class AccessTokenEntityDatabaseMappingConfiguration : ChangeTrackingEntit
 
 		builder.Property(token => token.Locale)
 			.IsRequired()
-			.IsUnicode()
+			.IsUnicode(false)
 			.HasMaxLength(32);
-
-		builder.Property(token => token.IsEmailVerified)
-			.IsRequired();
 	}
 }

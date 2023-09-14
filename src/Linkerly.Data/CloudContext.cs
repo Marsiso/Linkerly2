@@ -1,6 +1,5 @@
 ﻿#nullable disable
 
-using Linkerly.Domain.Application;
 using Linkerly.Domain.Application.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;

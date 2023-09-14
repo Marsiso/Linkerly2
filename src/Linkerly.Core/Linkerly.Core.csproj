@@ -10,4 +10,8 @@
         <ProjectReference Include="..\Linkerly.Data\Linkerly.Data.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Folder Include="Application\CodeLists\Mappings\"/>
+    </ItemGroup>
+
 </Project>

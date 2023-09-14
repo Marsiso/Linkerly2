@@ -1,3 +1,4 @@
+using Linkerly.Core.Application.Users.Mappings;
 using Linkerly.Domain.Application.Mappings;
 using Linkerly.Web;
 
@@ -7,7 +8,8 @@ applicationBuilder.Services.AddRazorPages();
 applicationBuilder.Services.AddServerSideBlazor();
 
 applicationBuilder.Services.AddSqlite(applicationBuilder.Configuration, applicationBuilder.Environment);
-applicationBuilder.Services.AddAutoMapper(typeof(UserEntityMappingConfiguration));
+applicationBuilder.Services.AddAutoMapper(typeof(UserEntityMappingConfiguration), typeof(UserCommandMappingConfiguration));
+applicationBuilder.Services.AddCqrs();
 
 var application = applicationBuilder.Build();
 
@@ -24,6 +26,9 @@ application.MapFallbackToPage("/_Host");
 
 application.Run();
 
-public partial class Program
+namespace Linkerly.Web
 {
+	public class Program
+	{
+	}
 }

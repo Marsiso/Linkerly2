@@ -1,5 +1,4 @@
 ﻿using Linkerly.Data.Application.Configurations.Common;
-using Linkerly.Domain.Application;
 using Linkerly.Domain.Application.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
