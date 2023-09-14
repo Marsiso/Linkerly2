@@ -1,13 +1,16 @@
 ﻿using FluentValidation;
+using Linkerly.Application.Validations;
+using Linkerly.Core.Application.Users.Queries;
 using Linkerly.Data;
 using Linkerly.Domain.Validations;
+using MediatR;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Linkerly.Web;
 
-public static class ConfigurationSessions
+public static class ConfigurationExtensions
 {
 	public static IServiceCollection AddSqlite(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
 	{
@@ -50,6 +53,17 @@ public static class ConfigurationSessions
 				options.EnableSensitiveDataLogging();
 			}
 		});
+
+		return services;
+	}
+
+	public static IServiceCollection AddCqrs(this IServiceCollection services)
+	{
+		services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(GetUserQuery).Assembly));
+
+		services.AddValidatorsFromAssembly(typeof(FluentValidationPipelineBehaviour<,>).Assembly, ServiceLifetime.Singleton);
+
+		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(FluentValidationPipelineBehaviour<,>));
 
 		return services;
 	}
