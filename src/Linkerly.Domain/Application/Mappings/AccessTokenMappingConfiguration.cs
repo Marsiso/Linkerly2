@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Linkerly.Domain.Application.Models;
 
 namespace Linkerly.Domain.Application.Mappings;
 

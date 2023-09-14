@@ -1,7 +1,6 @@
-﻿using Linkerly.Domain.Application.Models;
-using Linkerly.Domain.Application.Models.Common;
+﻿using Linkerly.Domain.Application.Models.Common;
 
-namespace Linkerly.Domain.Application;
+namespace Linkerly.Domain.Application.Models;
 
 public class AccessTokenEntity : ChangeTrackingEntity
 {
