@@ -1,67 +1,58 @@
-﻿@inherits LayoutComponentBase
+﻿@inherits Linkerly.Application.ViewModels.PageLayout
 
 <MudThemeProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
 
 <MudLayout>
-    <MudAppBar Elevation="25" Color="Color.Transparent">
-        <MudIconButton Color="Color.Inherit" Edge="Edge.Start" Icon="@Icons.Material.Filled.Menu" OnClick="@DrawerToggle" />
-        <MudText Class="ml-3" Color="Color.Inherit" Typo="Typo.h5">Linkerly</MudText>
-        <MudSpacer />
-        <MudMenu AnchorOrigin="Origin.BottomLeft" Variant="Variant.Text" TransformOrigin="Origin.BottomLeft" Color="Color.Inherit" FullWidth="false" ActivationEvent="MouseEvent.MouseOver">
-            <ActivatorContent>
-                <MudAvatar Color="Color.Inherit" Elevation="25" Rounded="true" Variant="Variant.Text"  />
-            </ActivatorContent>
-            <ChildContent>
-                <MudMenuItem Disabled="true" Icon="@Icons.Material.Filled.Person3" IconColor="Color.Inherit">FirstName LastName</MudMenuItem>
-                <MudMenuItem Disabled="true" Icon="@Icons.Material.Filled.Email" IconColor="Color.Inherit">fistname.lastname@example.com</MudMenuItem>
-                <MudMenuItem Icon="@Icons.Material.Filled.AccountBox" IconColor="Color.Inherit">Účet</MudMenuItem>
-                <MudMenuItem Icon="@Icons.Material.Filled.Settings" IconColor="Color.Inherit">Nastavení</MudMenuItem>
-                <MudMenuItem Icon="@Icons.Material.Filled.Logout" IconColor="Color.Inherit">Odhlásit se</MudMenuItem>
-            </ChildContent>
-        </MudMenu>
-    </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Color="Color.Inherit" DisableOverlay="true" Elevation="1" Variant="DrawerVariant.Responsive">
-        <MudStack Justify="Justify.SpaceBetween" Style="height: 100vh">
-            <MudNavMenu Color="Color.Inherit" Margin="Margin.Normal" Rounded="false">
-                <MudNavLink Icon="@Icons.Material.Filled.Folder" IconColor="Color.Inherit" Match="NavLinkMatch.All">Soubory</MudNavLink>
-                <MudNavLink Icon="@Icons.Material.Filled.Link" IconColor="Color.Inherit" Match="NavLinkMatch.All">Sdíleno se mnou</MudNavLink>
-                <MudNavLink Icon="@Icons.Material.Filled.Bookmark" IconColor="Color.Inherit" Match="NavLinkMatch.All">Záložky</MudNavLink>
-                <MudNavLink Icon="@Icons.Material.Filled.Delete" IconColor="Color.Inherit" Match="NavLinkMatch.All">Smazané</MudNavLink>
-                <MudDivider DividerType="DividerType.Middle"/>
-                <MudNavLink Icon="@Icons.Material.Filled.Error" IconColor="Color.Inherit" Match="NavLinkMatch.All">Notifikace</MudNavLink>
-                <MudDivider DividerType="DividerType.Middle"/>
-                <MudNavLink Icon="@Icons.Material.Filled.ManageAccounts" IconColor="Color.Inherit" Match="NavLinkMatch.All">Spravovat uživatele</MudNavLink>
-                <MudNavLink Icon="@Icons.Material.Filled.AddToDrive" IconColor="Color.Inherit" Match="NavLinkMatch.All">Spravovat úložiště</MudNavLink>
-                <MudNavLink Icon="@Icons.Material.Filled.DashboardCustomize" IconColor="Color.Inherit" Match="NavLinkMatch.All">Spravovat výběrovníky</MudNavLink>
-                <MudNavLink Icon="@Icons.Material.Filled.AddTask" IconColor="Color.Inherit" Match="NavLinkMatch.All">Spravovat úlohy</MudNavLink>
-                <MudNavLink Icon="@Icons.Material.Filled.BarChart" IconColor="Color.Inherit" Match="NavLinkMatch.All">Statistika</MudNavLink>
-                <MudNavLink Icon="@Icons.Material.Filled.ManageHistory" IconColor="Color.Inherit" Match="NavLinkMatch.All">Historie</MudNavLink>
-                <MudNavLink Icon="@Icons.Material.Filled.LogoDev" IconColor="Color.Inherit" Match="NavLinkMatch.All">Protokoly</MudNavLink>
-            </MudNavMenu>
-            <MudNavMenu Color="Color.Inherit" Margin="Margin.Normal" Rounded="false">
-                <MudNavLink Icon="@Icons.Material.Filled.AccountBox" IconColor="Color.Inherit" Match="NavLinkMatch.All">Účet</MudNavLink>
-                <MudNavLink Icon="@Icons.Material.Filled.Settings" IconColor="Color.Inherit" Match="NavLinkMatch.All">Nastavení</MudNavLink>
-                <MudNavLink Icon="@Icons.Material.Filled.Info" IconColor="Color.Inherit" Match="NavLinkMatch.All">O aplikaci</MudNavLink>
-                <MudNavLink Icon="@Icons.Material.Filled.Logout" IconColor="Color.Inherit" Match="NavLinkMatch.All">Odhlásit se</MudNavLink>
-            </MudNavMenu>
-        </MudStack>
-    </MudDrawer>
-    <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.Large">
-            <MudContainer Class="my-4">
-                @Body
-            </MudContainer>
-        </MudContainer>
-    </MudMainContent>
+	<MudAppBar Elevation="25" Color="Color.Transparent">
+		<MudIconButton Color="Color.Inherit" Edge="Edge.Start" Icon="@Icons.Material.Filled.Menu" OnClick="@ToggleSidebar"/>
+		<MudText Class="ml-3" Color="Color.Inherit" Typo="Typo.h5">Linkerly</MudText>
+		<MudSpacer/>
+		<MudMenu AnchorOrigin="Origin.BottomLeft" Variant="Variant.Text" TransformOrigin="Origin.BottomLeft" Color="Color.Inherit" FullWidth="false" ActivationEvent="MouseEvent.MouseOver">
+			<ActivatorContent>
+				<MudAvatar Color="Color.Inherit" Elevation="25" Rounded="true" Variant="Variant.Text"/>
+			</ActivatorContent>
+			<ChildContent>
+				<MudMenuItem Disabled="true" Icon="@Icons.Material.Filled.Person3" IconColor="Color.Inherit">FirstName LastName</MudMenuItem>
+				<MudMenuItem Disabled="true" Icon="@Icons.Material.Filled.Email" IconColor="Color.Inherit">fistname.lastname@example.com</MudMenuItem>
+				<MudMenuItem Icon="@Icons.Material.Filled.AccountBox" IconColor="Color.Inherit">Účet</MudMenuItem>
+				<MudMenuItem Icon="@Icons.Material.Filled.Settings" IconColor="Color.Inherit">Nastavení</MudMenuItem>
+				<MudMenuItem Icon="@Icons.Material.Filled.Logout" IconColor="Color.Inherit">Odhlásit se</MudMenuItem>
+			</ChildContent>
+		</MudMenu>
+	</MudAppBar>
+	<MudDrawer @bind-Open="@IsSidebarVisible" ClipMode="DrawerClipMode.Always" Color="Color.Inherit" DisableOverlay="true" Elevation="1" Variant="DrawerVariant.Responsive">
+		<MudStack Justify="Justify.SpaceBetween" Style="height: 100vh">
+			<MudNavMenu Color="Color.Inherit" Margin="Margin.Normal" Rounded="false">
+				<MudNavLink Icon="@Icons.Material.Filled.Folder" IconColor="Color.Inherit" Match="NavLinkMatch.All">Soubory</MudNavLink>
+				<MudNavLink Icon="@Icons.Material.Filled.Link" IconColor="Color.Inherit" Match="NavLinkMatch.All">Sdíleno se mnou</MudNavLink>
+				<MudNavLink Icon="@Icons.Material.Filled.Bookmark" IconColor="Color.Inherit" Match="NavLinkMatch.All">Záložky</MudNavLink>
+				<MudNavLink Icon="@Icons.Material.Filled.Delete" IconColor="Color.Inherit" Match="NavLinkMatch.All">Smazané</MudNavLink>
+				<MudDivider DividerType="DividerType.Middle"/>
+				<MudNavLink Icon="@Icons.Material.Filled.Error" IconColor="Color.Inherit" Match="NavLinkMatch.All">Notifikace</MudNavLink>
+				<MudDivider DividerType="DividerType.Middle"/>
+				<MudNavLink Icon="@Icons.Material.Filled.ManageAccounts" IconColor="Color.Inherit" Match="NavLinkMatch.All">Spravovat uživatele</MudNavLink>
+				<MudNavLink Icon="@Icons.Material.Filled.AddToDrive" IconColor="Color.Inherit" Match="NavLinkMatch.All">Spravovat úložiště</MudNavLink>
+				<MudNavLink Icon="@Icons.Material.Filled.DashboardCustomize" IconColor="Color.Inherit" Match="NavLinkMatch.All">Spravovat výběrovníky</MudNavLink>
+				<MudNavLink Icon="@Icons.Material.Filled.AddTask" IconColor="Color.Inherit" Match="NavLinkMatch.All">Spravovat úlohy</MudNavLink>
+				<MudNavLink Icon="@Icons.Material.Filled.BarChart" IconColor="Color.Inherit" Match="NavLinkMatch.All">Statistika</MudNavLink>
+				<MudNavLink Icon="@Icons.Material.Filled.ManageHistory" IconColor="Color.Inherit" Match="NavLinkMatch.All">Historie</MudNavLink>
+				<MudNavLink Icon="@Icons.Material.Filled.LogoDev" IconColor="Color.Inherit" Match="NavLinkMatch.All">Protokoly</MudNavLink>
+			</MudNavMenu>
+			<MudNavMenu Color="Color.Inherit" Margin="Margin.Normal" Rounded="false">
+				<MudNavLink Icon="@Icons.Material.Filled.AccountBox" IconColor="Color.Inherit" Match="NavLinkMatch.All">Účet</MudNavLink>
+				<MudNavLink Icon="@Icons.Material.Filled.Settings" IconColor="Color.Inherit" Match="NavLinkMatch.All">Nastavení</MudNavLink>
+				<MudNavLink Icon="@Icons.Material.Filled.Info" IconColor="Color.Inherit" Match="NavLinkMatch.All">O aplikaci</MudNavLink>
+				<MudNavLink Icon="@Icons.Material.Filled.Logout" IconColor="Color.Inherit" Match="NavLinkMatch.All">Odhlásit se</MudNavLink>
+			</MudNavMenu>
+		</MudStack>
+	</MudDrawer>
+	<MudMainContent>
+		<MudContainer MaxWidth="MaxWidth.Large">
+			<MudContainer Class="my-4">
+				@Body
+			</MudContainer>
+		</MudContainer>
+	</MudMainContent>
 </MudLayout>
-
-@code {
-    private bool _drawerOpen = true;
-
-    private void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
-}
