@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Linkerly.Core.Application.Users.Queries;
 
-public class GetUserByIdentifierQuery : IQuery<UserEntity>
+public class GetUserByIdentifierQuery : IQuery<UserEntity?>
 {
     public GetUserByIdentifierQuery(string? identifier)
     {

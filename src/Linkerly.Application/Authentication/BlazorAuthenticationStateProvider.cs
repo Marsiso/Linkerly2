@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
-using AutoMapper;
 using Linkerly.Core.Application.Users.Commands;
+using Linkerly.Core.Application.Users.Queries;
+using Linkerly.Domain.Application.Models;
 using MediatR;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,14 +13,12 @@ public class BlazorAuthenticationStateProvider : AuthenticationStateProvider
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<BlazorAuthenticationStateProvider> _logger;
-    private readonly IMapper _mapper;
     private readonly ISender _messageHandlerBroker;
 
-    public BlazorAuthenticationStateProvider(ISender messageHandlerBroker, IHttpContextAccessor httpContextAccessor, IMapper mapper, ILogger<BlazorAuthenticationStateProvider> logger)
+    public BlazorAuthenticationStateProvider(ISender messageHandlerBroker, IHttpContextAccessor httpContextAccessor, ILogger<BlazorAuthenticationStateProvider> logger)
     {
         _messageHandlerBroker = messageHandlerBroker;
         _httpContextAccessor = httpContextAccessor;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -34,21 +33,39 @@ public class BlazorAuthenticationStateProvider : AuthenticationStateProvider
 
         ClaimsPrincipal claimsPrincipal = httpContext.User;
 
-        CreateUserCommand createUserCommand = new CreateUserCommand(
-            claimsPrincipal.FindFirstValue("id"),
-            claimsPrincipal.FindFirstValue("email"),
-            "true".Equals(claimsPrincipal.FindFirstValue("verified_email"), StringComparison.OrdinalIgnoreCase),
-            claimsPrincipal.FindFirstValue("name"), claimsPrincipal.FindFirstValue("given_name"),
-            claimsPrincipal.FindFirstValue("family_name"),
-            claimsPrincipal.FindFirstValue("picture"));
-
         try
         {
-            //_ = await _messageHandlerBroker.Send(createUserCommand);
+            GetUserByIdentifierQuery getUserQuery = new GetUserByIdentifierQuery(claimsPrincipal.FindFirstValue("id"));
 
-            //GetUserByEmailQuery getUserQuery = new();
+            UserEntity? originalUser = await _messageHandlerBroker.Send(getUserQuery);
 
-            //Domain.Application.Models.UserEntity? originalUser = await _messageHandlerBroker.Send(getUserQuery);
+            if (originalUser is null)
+            {
+                CreateUserCommand createUserCommand = new CreateUserCommand(
+                    claimsPrincipal.FindFirstValue("id"),
+                    claimsPrincipal.FindFirstValue("email"),
+                    "true".Equals(claimsPrincipal.FindFirstValue("verified_email"), StringComparison.OrdinalIgnoreCase),
+                    claimsPrincipal.FindFirstValue("name"), claimsPrincipal.FindFirstValue("given_name"),
+                    claimsPrincipal.FindFirstValue("family_name"),
+                    claimsPrincipal.FindFirstValue("picture"),
+                    claimsPrincipal.FindFirstValue("locale"));
+
+                _ = await _messageHandlerBroker.Send(createUserCommand);
+            }
+            else
+            {
+                UpdateUserCommand updateUserCommand = new UpdateUserCommand(
+                    originalUser.UserID,
+                    claimsPrincipal.FindFirstValue("id"),
+                    claimsPrincipal.FindFirstValue("email"),
+                    "true".Equals(claimsPrincipal.FindFirstValue("verified_email"), StringComparison.OrdinalIgnoreCase),
+                    claimsPrincipal.FindFirstValue("name"), claimsPrincipal.FindFirstValue("given_name"),
+                    claimsPrincipal.FindFirstValue("family_name"),
+                    claimsPrincipal.FindFirstValue("picture"),
+                    claimsPrincipal.FindFirstValue("locale"));
+
+                _ = await _messageHandlerBroker.Send(updateUserCommand);
+            }
 
             return new AuthenticationState(claimsPrincipal);
         }

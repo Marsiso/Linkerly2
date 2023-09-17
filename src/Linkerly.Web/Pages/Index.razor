@@ -1,9 +1,8 @@
-﻿@attribute [Route(Routes.Index)]
-
-@using System.Security.Claims;
+﻿@using System.Security.Claims
 @using Linkerly.Application.ViewModels
+@attribute [Route(Routes.Index)]
 
-@if (Claims is { Count: > 0 })
+@if (Claims is { Count: > 0, })
 {
     <MudTable Items="@Claims">
         <HeaderContent>
@@ -19,6 +18,7 @@
 
 
 @code{
+
     [Inject]
     public required AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
@@ -32,4 +32,5 @@
 
         Claims = claimsPrincipal.Claims.ToList();
     }
+
 }

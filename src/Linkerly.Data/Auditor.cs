@@ -42,20 +42,32 @@ public class Auditor : SaveChangesInterceptor
             switch (entityEntry.State)
             {
                 case EntityState.Added:
+                {
                     entityEntry.Entity.IsActive = true;
                     entityEntry.Entity.DateCreated = entityEntry.Entity.DateUpdated = dateTime;
                     continue;
+                }
                 case EntityState.Modified:
+                {
                     entityEntry.Entity.DateUpdated = dateTime;
                     continue;
+                }
                 case EntityState.Deleted:
+                {
                     throw new InvalidOperationException();
+                }
                 case EntityState.Detached:
+                {
                     continue;
+                }
                 case EntityState.Unchanged:
+                {
                     continue;
+                }
                 default:
+                {
                     continue;
+                }
             }
         }
     }

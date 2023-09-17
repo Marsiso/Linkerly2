@@ -9,9 +9,10 @@ public class UserEntity : ChangeTrackingEntity
     public string Email { get; set; } = string.Empty;
     public bool HasEmailConfirmed { get; set; }
     public string Name { get; set; } = string.Empty;
-    public string FirstName { get; set; } = string.Empty;
-    public string LastName { get; set; } = string.Empty;
-    public string? ProfilePhotoURL { get; set; }
+    public string GivenName { get; set; } = string.Empty;
+    public string FamilyName { get; set; } = string.Empty;
+    public string? Picture { get; set; }
+    public string? Locale { get; set; }
 
     public FolderEntity? RootFolder { get; set; }
 }

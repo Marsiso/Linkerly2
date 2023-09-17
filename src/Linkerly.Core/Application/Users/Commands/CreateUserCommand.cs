@@ -8,24 +8,26 @@ namespace Linkerly.Core.Application.Users.Commands;
 
 public class CreateUserCommand : ICommand<Unit>
 {
-    public CreateUserCommand(string? identifier, string? email, bool hasEmailConfirmed, string? name, string? firstName, string? lastName, string? profilePhotoUrl)
+    public CreateUserCommand(string? identifier, string? email, bool hasEmailConfirmed, string? name, string? givenName, string? familyName, string? picture, string? locale)
     {
         Identifier = identifier;
         Email = email;
         HasEmailConfirmed = hasEmailConfirmed;
         Name = name;
-        FirstName = firstName;
-        LastName = lastName;
-        ProfilePhotoURL = profilePhotoUrl;
+        GivenName = givenName;
+        FamilyName = familyName;
+        Picture = picture;
+        Locale = locale;
     }
 
     public string? Identifier { get; }
     public string? Email { get; }
     public bool HasEmailConfirmed { get; }
     public string? Name { get; }
-    public string? FirstName { get; }
-    public string? LastName { get; }
-    public string? ProfilePhotoURL { get; }
+    public string? GivenName { get; }
+    public string? FamilyName { get; }
+    public string? Picture { get; }
+    public string? Locale { get; }
 }
 
 public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, Unit>

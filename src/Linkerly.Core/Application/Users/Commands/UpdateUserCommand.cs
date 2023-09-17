@@ -10,16 +10,17 @@ namespace Linkerly.Core.Application.Users.Commands;
 
 public class UpdateUserCommand : ICommand<Unit>
 {
-    public UpdateUserCommand(int userID, string? identifier, string? email, bool hasEmailConfirmed, string? name, string? firstName, string? lastName, string? profilePhotoURL)
+    public UpdateUserCommand(int userID, string? identifier, string? email, bool hasEmailConfirmed, string? name, string? givenName, string? familyName, string? picture, string? locale)
     {
         UserID = userID;
         Identifier = identifier;
         Email = email;
         HasEmailConfirmed = hasEmailConfirmed;
         Name = name;
-        FirstName = firstName;
-        LastName = lastName;
-        ProfilePhotoURL = profilePhotoURL;
+        GivenName = givenName;
+        FamilyName = familyName;
+        Picture = picture;
+        Locale = locale;
     }
 
     public int UserID { get; }
@@ -27,9 +28,10 @@ public class UpdateUserCommand : ICommand<Unit>
     public string? Email { get; }
     public bool HasEmailConfirmed { get; }
     public string? Name { get; }
-    public string? FirstName { get; }
-    public string? LastName { get; }
-    public string? ProfilePhotoURL { get; }
+    public string? GivenName { get; }
+    public string? FamilyName { get; }
+    public string? Picture { get; }
+    public string? Locale { get; }
 }
 
 public class UpdateUserCommandHandler : ICommandHandler<UpdateUserCommand, Unit>

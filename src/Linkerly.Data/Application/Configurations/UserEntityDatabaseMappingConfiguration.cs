@@ -43,12 +43,12 @@ public class UserEntityDatabaseMappingConfiguration : ChangeTrackingEntityDataba
                .IsUnicode()
                .HasMaxLength(1024);
 
-        builder.Property(user => user.FirstName)
+        builder.Property(user => user.GivenName)
                .IsRequired()
                .IsUnicode()
                .HasMaxLength(256);
 
-        builder.Property(user => user.LastName)
+        builder.Property(user => user.FamilyName)
                .IsRequired()
                .IsUnicode()
                .HasMaxLength(256);
@@ -56,10 +56,15 @@ public class UserEntityDatabaseMappingConfiguration : ChangeTrackingEntityDataba
         builder.Property(user => user.HasEmailConfirmed)
                .IsRequired();
 
-        builder.Property(user => user.ProfilePhotoURL)
+        builder.Property(user => user.Picture)
                .IsRequired(false)
                .IsUnicode(false)
                .HasMaxLength(2048);
+
+        builder.Property(user => user.Locale)
+               .IsRequired(false)
+               .IsUnicode(false)
+               .HasMaxLength(32);
 
         builder.HasOne(user => user.RootFolder)
                .WithOne(folder => folder.User)
