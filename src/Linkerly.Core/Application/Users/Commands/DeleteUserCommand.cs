@@ -10,42 +10,42 @@ namespace Linkerly.Core.Application.Users.Commands;
 
 public class DeleteUserCommand : ICommand<Unit>
 {
-	public DeleteUserCommand(int userId)
-	{
-		UserID = userId;
-	}
+    public DeleteUserCommand(int userID)
+    {
+        UserID = userID;
+    }
 
-	public int UserID { get; }
+    public int UserID { get; }
 }
 
 public class DeleteUserCommandHandler : ICommandHandler<DeleteUserCommand, Unit>
 {
-	private readonly CloudContext _databaseContext;
-	private readonly IMapper _mapper;
+    private readonly CloudContext _databaseContext;
+    private readonly IMapper _mapper;
 
-	public DeleteUserCommandHandler(CloudContext databaseContext, IMapper mapper)
-	{
-		_databaseContext = databaseContext;
-		_mapper = mapper;
-	}
+    public DeleteUserCommandHandler(CloudContext databaseContext, IMapper mapper)
+    {
+        _databaseContext = databaseContext;
+        _mapper = mapper;
+    }
 
-	public Task<Unit> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
-	{
-		ArgumentNullException.ThrowIfNull(request);
+    public Task<Unit> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
 
-		cancellationToken.ThrowIfCancellationRequested();
+        cancellationToken.ThrowIfCancellationRequested();
 
-		var originalEntity = _databaseContext.Users.AsTracking().SingleOrDefault(user => user.UserID == request.UserID);
+        UserEntity? originalEntity = _databaseContext.Users.AsTracking().SingleOrDefault(user => user.UserID == request.UserID);
 
-		if (originalEntity is null)
-		{
-			throw new EntityNotFoundException(request.UserID.ToString(), nameof(UserEntity));
-		}
+        if (originalEntity is null)
+        {
+            throw new EntityNotFoundException(request.UserID.ToString(), nameof(UserEntity));
+        }
 
-		originalEntity.IsActive = false;
+        originalEntity.IsActive = false;
 
-		_ = _databaseContext.SaveChanges();
+        _ = _databaseContext.SaveChanges();
 
-		return Unit.Task;
-	}
+        return Unit.Task;
+    }
 }

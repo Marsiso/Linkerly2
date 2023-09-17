@@ -1,9 +1,14 @@
 ﻿using FluentValidation;
+using Linkerly.Application.Authentication;
+using Linkerly.Application.Helpers;
 using Linkerly.Application.Validations;
 using Linkerly.Core.Application.Users.Queries;
 using Linkerly.Data;
 using Linkerly.Domain.Validations;
 using MediatR;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -12,81 +17,133 @@ namespace Linkerly.Web;
 
 public static class ConfigurationExtensions
 {
-	public static IServiceCollection AddSqlite(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
-	{
-		services.AddSingleton<IValidator<CloudContextOptions>, CloudContextOptionsValidator>();
+    public static IServiceCollection AddSqlite(this IServiceCollection services, IConfiguration configuration,
+                                               IWebHostEnvironment environment)
+    {
+        services.AddSingleton<IValidator<CloudContextOptions>, CloudContextOptionsValidator>();
 
-		services
-			.AddOptions<CloudContextOptions>()
-			.Bind(configuration.GetSection(CloudContextOptions.SectionName))
-			.ValidateFluently()
-			.ValidateOnStart();
+        services.AddOptions<CloudContextOptions>()
+                .Bind(configuration.GetSection(CloudContextOptions.SectionName))
+                .ValidateFluently()
+                .ValidateOnStart();
 
-		var databaseContextOptions = configuration.GetSection(CloudContextOptions.SectionName).Get<CloudContextOptions>();
+        CloudContextOptions? databaseContextOptions = configuration.GetSection(CloudContextOptions.SectionName).Get<CloudContextOptions>();
 
-		ArgumentNullException.ThrowIfNull(databaseContextOptions);
+        ArgumentNullException.ThrowIfNull(databaseContextOptions);
 
-		services.AddHttpContextAccessor();
-		services.AddScoped<HttpContextAccessor>();
+        services.AddHttpContextAccessor()
+                .AddScoped<HttpContextAccessor>();
 
-		services.AddScoped<ISaveChangesInterceptor, Auditor>();
+        services.AddScoped<ISaveChangesInterceptor, Auditor>();
 
-		services.AddDbContext<CloudContext>(options =>
-		{
-			options.UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll);
-			options.UseSqlite();
+        services.AddDbContext<CloudContext>(options =>
+        {
+            string source = Path.Combine(databaseContextOptions.Location, databaseContextOptions.FileName);
 
-			var source = Path.Combine(databaseContextOptions.Location, databaseContextOptions.FileName);
+            string connectionStringBase = $"Data Source={source};";
 
-			var connectionStringBase = $"Data Source={source};";
+            string connectionString = new SqliteConnectionStringBuilder(connectionStringBase)
+            {
+                Mode = SqliteOpenMode.ReadWriteCreate,
+            }.ToString();
 
-			var connectionString = new SqliteConnectionStringBuilder(connectionStringBase)
-			{
-				Mode = SqliteOpenMode.ReadWriteCreate
-			}.ToString();
+            options.UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
+                   .UseSqlite(connectionString);
 
-			options.UseSqlite(connectionString);
+            if (environment.IsDevelopment())
+            {
+                options.EnableDetailedErrors()
+                       .EnableSensitiveDataLogging();
+            }
+        });
 
-			if (environment.IsDevelopment())
-			{
-				options.EnableDetailedErrors();
-				options.EnableSensitiveDataLogging();
-			}
-		});
+        return services;
+    }
 
-		return services;
-	}
+    public static IServiceCollection AddCqrs(this IServiceCollection services)
+    {
+        services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(GetUserQuery).Assembly))
+                .AddValidatorsFromAssembly(typeof(FluentValidationPipelineBehaviour<,>).Assembly, ServiceLifetime.Singleton)
+                .AddTransient(typeof(IPipelineBehavior<,>), typeof(FluentValidationPipelineBehaviour<,>));
 
-	public static IServiceCollection AddCqrs(this IServiceCollection services)
-	{
-		services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(GetUserQuery).Assembly));
+        return services;
+    }
 
-		services.AddValidatorsFromAssembly(typeof(FluentValidationPipelineBehaviour<,>).Assembly, ServiceLifetime.Singleton);
+    public static WebApplication UseSqliteSeeder(this WebApplication application)
+    {
+        IServiceProvider services = application.Services;
+        IWebHostEnvironment environment = application.Environment;
 
-		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(FluentValidationPipelineBehaviour<,>));
+        using IServiceScope serviceScope = services.CreateScope();
 
-		return services;
-	}
+        CloudContext databaseContext = serviceScope.ServiceProvider.GetRequiredService<CloudContext>();
 
-	public static WebApplication UseSqliteSeeder(this WebApplication application)
-	{
-		var services = application.Services;
-		var environment = application.Environment;
+        if (environment.IsDevelopment())
+        {
+            databaseContext.Database.EnsureDeleted();
+            databaseContext.Database.EnsureCreated();
+        }
+        else
+        {
+            databaseContext.Database.EnsureCreated();
+        }
 
-		using var serviceScope = services.CreateScope();
+        return application;
+    }
 
-		var databaseContext = serviceScope.ServiceProvider.GetRequiredService<CloudContext>();
+    public static IServiceCollection AddGoogleCloudIdentity(this IServiceCollection services, IConfiguration configuration)
+    {
+        IConfigurationSection configurationSection = configuration.GetSection(GoogleCloudIdentityOptions.SegmentName);
 
-		if (environment.IsDevelopment())
-		{
-			databaseContext.Database.EnsureDeleted();
-			databaseContext.Database.EnsureCreated();
-		}
-		else
-		{
-			databaseContext.Database.EnsureCreated();
-		}
+        ArgumentNullException.ThrowIfNull(configurationSection);
 
-		return application;
-	}
+        GoogleCloudIdentityOptions? identityProviderOptions = configurationSection.Get<GoogleCloudIdentityOptions>();
+
+        ArgumentNullException.ThrowIfNull(identityProviderOptions);
+
+        services.AddSingleton<IValidator<GoogleCloudIdentityOptions>, GoogleCloudIdentityOptionsValidator>();
+
+        services
+            .AddOptions<GoogleCloudIdentityOptions>()
+            .Bind(configurationSection)
+            .ValidateFluently()
+            .ValidateOnStart();
+
+        services
+            .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie();
+
+        services
+            .AddAuthentication()
+            .AddGoogle(options =>
+            {
+                options.ClientId = identityProviderOptions.ClientID;
+                options.ClientSecret = identityProviderOptions.ClientSecret;
+                options.CallbackPath = identityProviderOptions.CallbackPath;
+                options.SaveTokens = true;
+                options.ClaimActions.MapAll();
+            });
+
+        services.AddHttpContextAccessor();
+        services.AddScoped<HttpContextAccessor>();
+
+        services.AddHttpClient();
+        services.AddScoped<HttpClient>();
+
+        services.AddScoped<AuthenticationStateProvider, BlazorAuthenticationStateProvider>();
+
+        return services;
+    }
+
+    public static WebApplication UseSecurityHeaders(this WebApplication application)
+    {
+        IWebHostEnvironment environment = application.Environment;
+
+        if (!environment.IsDevelopment())
+        {
+            application.UseSecurityHeaders(SecurityHeaderHelpers.GetHeaderPolicyCollection());
+        }
+
+        return application;
+    }
 }

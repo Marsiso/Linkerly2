@@ -2,15 +2,15 @@
 
 public class EntityNotFoundException : Exception
 {
-	public EntityNotFoundException(string entityID, string entityTypeName)
-	{
-		ArgumentException.ThrowIfNullOrEmpty(entityID);
-		ArgumentException.ThrowIfNullOrEmpty(entityTypeName);
+    public EntityNotFoundException(string? entityID, string? entityTypeName)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(entityID);
+        ArgumentException.ThrowIfNullOrEmpty(entityTypeName);
 
-		EntityID = entityID;
-		EntityTypeName = entityTypeName;
-	}
+        EntityID = entityID;
+        EntityTypeName = entityTypeName;
+    }
 
-	public string EntityID { get; } = string.Empty;
-	public string EntityTypeName { get; } = string.Empty;
+    public string EntityID { get; }
+    public string EntityTypeName { get; }
 }

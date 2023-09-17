@@ -3,24 +3,32 @@ using Linkerly.Domain.Application.Mappings;
 using Linkerly.Web;
 using MudBlazor.Services;
 
-var applicationBuilder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-applicationBuilder.Services.AddRazorPages();
-applicationBuilder.Services.AddServerSideBlazor();
+IServiceCollection services = builder.Services;
+IConfiguration configuration = builder.Configuration;
+IWebHostEnvironment environment = builder.Environment;
 
-applicationBuilder.Services.AddMudServices();
+services.AddRazorPages();
+services.AddServerSideBlazor();
 
-applicationBuilder.Services.AddSqlite(applicationBuilder.Configuration, applicationBuilder.Environment);
-applicationBuilder.Services.AddAutoMapper(typeof(UserEntityMappingConfiguration), typeof(UserCommandMappingConfiguration));
-applicationBuilder.Services.AddCqrs();
+services.AddMudServices()
+        .AddSqlite(configuration, environment)
+        .AddAutoMapper(typeof(UserEntityMappingConfiguration), typeof(UserCommandMappingConfiguration))
+        .AddCqrs()
+        .AddGoogleCloudIdentity(configuration);
 
-var application = applicationBuilder.Build();
+WebApplication application = builder.Build();
 
-application.UseSqliteSeeder();
+application.UseSqliteSeeder()
+           .UseSecurityHeaders();
 
 application.UseHttpsRedirection();
 
 application.UseStaticFiles();
+
+application.UseCookiePolicy();
+application.UseAuthentication();
 
 application.UseRouting();
 
@@ -31,7 +39,7 @@ application.Run();
 
 namespace Linkerly.Web
 {
-	public class Program
-	{
-	}
+    public class Program
+    {
+    }
 }

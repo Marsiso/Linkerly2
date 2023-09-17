@@ -7,17 +7,17 @@ namespace Linkerly.Data.Application.Configurations;
 
 public class CodeListDatabaseMappingConfiguration : ChangeTrackingEntityDatabaseMappingConfiguration<CodeListEntity>
 {
-	public override void Configure(EntityTypeBuilder<CodeListEntity> builder)
-	{
-		base.Configure(builder);
+    public override void Configure(EntityTypeBuilder<CodeListEntity> builder)
+    {
+        base.Configure(builder);
 
-		builder.ToTable(Tables.Application.CodeLists);
+        builder.ToTable(Tables.Application.CodeLists);
 
-		builder.HasKey(codeList => codeList.CodeListID);
+        builder.HasKey(codeList => codeList.CodeListID);
 
-		builder.Property(codeList => codeList.Name)
-			.IsRequired()
-			.IsUnicode()
-			.HasMaxLength(256);
-	}
+        builder.Property(codeList => codeList.Name)
+               .IsRequired()
+               .IsUnicode()
+               .HasMaxLength(256);
+    }
 }

@@ -10,46 +10,46 @@ namespace Linkerly.Core.Application.CodeListItems.Commands;
 
 public class UpdateCodeListItemCommand : ICommand<Unit>
 {
-	public UpdateCodeListItemCommand(int codeListItemId, int codeListId, string? value)
-	{
-		CodeListItemID = codeListItemId;
-		CodeListID = codeListId;
-		Value = value;
-	}
+    public UpdateCodeListItemCommand(int codeListItemId, int codeListId, string? value)
+    {
+        CodeListItemID = codeListItemId;
+        CodeListID = codeListId;
+        Value = value;
+    }
 
-	public int CodeListItemID { get; }
-	public int CodeListID { get; }
-	public string? Value { get; }
+    public int CodeListItemID { get; }
+    public int CodeListID { get; }
+    public string? Value { get; }
 }
 
 public class UpdateCodeListItemCommandHandler : ICommandHandler<UpdateCodeListItemCommand, Unit>
 {
-	private readonly CloudContext _databaseContext;
-	private readonly IMapper _mapper;
+    private readonly CloudContext _databaseContext;
+    private readonly IMapper _mapper;
 
-	public UpdateCodeListItemCommandHandler(CloudContext databaseContext, IMapper mapper)
-	{
-		_databaseContext = databaseContext;
-		_mapper = mapper;
-	}
+    public UpdateCodeListItemCommandHandler(CloudContext databaseContext, IMapper mapper)
+    {
+        _databaseContext = databaseContext;
+        _mapper = mapper;
+    }
 
-	public Task<Unit> Handle(UpdateCodeListItemCommand request, CancellationToken cancellationToken)
-	{
-		ArgumentNullException.ThrowIfNull(request);
+    public Task<Unit> Handle(UpdateCodeListItemCommand request, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
 
-		cancellationToken.ThrowIfCancellationRequested();
+        cancellationToken.ThrowIfCancellationRequested();
 
-		var originalCodeListItem = _databaseContext.CodeListItems.AsTracking().SingleOrDefault(codeListItem => codeListItem.CodeListItemID == request.CodeListItemID);
+        CodeListItemEntity? originalCodeListItem = _databaseContext.CodeListItems.AsTracking().SingleOrDefault(codeListItem => codeListItem.CodeListItemID == request.CodeListItemID);
 
-		if (originalCodeListItem is null)
-		{
-			throw new EntityNotFoundException(request.CodeListItemID.ToString(), nameof(CodeListItemEntity));
-		}
+        if (originalCodeListItem is null)
+        {
+            throw new EntityNotFoundException(request.CodeListItemID.ToString(), nameof(CodeListItemEntity));
+        }
 
-		_ = _mapper.Map(request, originalCodeListItem);
+        _ = _mapper.Map(request, originalCodeListItem);
 
-		_ = _databaseContext.SaveChanges();
+        _ = _databaseContext.SaveChanges();
 
-		return Unit.Task;
-	}
+        return Unit.Task;
+    }
 }
