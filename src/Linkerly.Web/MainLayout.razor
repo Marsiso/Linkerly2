@@ -13,11 +13,11 @@
                 <MudSpacer />
                 <MudMenu ActivationEvent="MouseEvent.MouseOver" AnchorOrigin="Origin.BottomLeft" Color="Color.Inherit" FullWidth="false" TransformOrigin="Origin.BottomLeft" Variant="Variant.Text">
                     <ActivatorContent>
-                        <MudAvatar Color="Color.Inherit" Elevation="25" Rounded="true" Variant="Variant.Text" />
+                        <MudAvatar Color="Color.Inherit" Elevation="25" Image="@User?.Picture" Rounded="true" Variant="Variant.Text" />
                     </ActivatorContent>
                     <ChildContent>
-                        <MudMenuItem Disabled="true" Icon="@Icons.Material.Filled.Person3" IconColor="Color.Inherit">FirstName LastName</MudMenuItem>
-                        <MudMenuItem Disabled="true" Icon="@Icons.Material.Filled.Email" IconColor="Color.Inherit">fistname.lastname@example.com</MudMenuItem>
+                        <MudMenuItem Disabled="true" Icon="@Icons.Material.Filled.Person3" IconColor="Color.Inherit">@User?.GivenName @User?.FamilyName</MudMenuItem>
+                        <MudMenuItem Disabled="true" Icon="@Icons.Material.Filled.Email" IconColor="Color.Inherit">@User?.Email</MudMenuItem>
                         <MudMenuItem Icon="@Icons.Material.Filled.AccountBox" IconColor="Color.Inherit">Účet</MudMenuItem>
                         <MudMenuItem Icon="@Icons.Material.Filled.Settings" IconColor="Color.Inherit">Nastavení</MudMenuItem>
                         <MudMenuItem Href="/Authentication/Logout" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Inherit" Target="_top">Odhlásit se</MudMenuItem>
