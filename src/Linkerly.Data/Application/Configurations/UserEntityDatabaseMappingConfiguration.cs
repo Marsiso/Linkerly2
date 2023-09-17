@@ -14,7 +14,7 @@ public class UserEntityDatabaseMappingConfiguration : ChangeTrackingEntityDataba
         builder.ToTable(Tables.Application.Users);
 
         builder.HasKey(user => user.UserID);
-        
+
         builder.HasIndex(user => user.Identifier)
                .IsUnique();
 
@@ -32,7 +32,7 @@ public class UserEntityDatabaseMappingConfiguration : ChangeTrackingEntityDataba
                .IsRequired()
                .IsUnicode(false)
                .HasMaxLength(512);
-        
+
         builder.Property(user => user.Email)
                .IsRequired()
                .IsUnicode(false)

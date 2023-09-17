@@ -1,9 +1,14 @@
 ﻿using FluentValidation;
+using Linkerly.Application.Authentication;
+using Linkerly.Application.Helpers;
 using Linkerly.Application.Validations;
 using Linkerly.Core.Application.Users.Queries;
 using Linkerly.Data;
 using Linkerly.Domain.Validations;
 using MediatR;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -22,9 +27,9 @@ public static class ConfigurationExtensions
                 .ValidateFluently()
                 .ValidateOnStart();
 
-        CloudContextOptions? contextOptions = configuration.GetSection(CloudContextOptions.SectionName).Get<CloudContextOptions>();
+        CloudContextOptions? databaseContextOptions = configuration.GetSection(CloudContextOptions.SectionName).Get<CloudContextOptions>();
 
-        ArgumentNullException.ThrowIfNull(contextOptions);
+        ArgumentNullException.ThrowIfNull(databaseContextOptions);
 
         services.AddHttpContextAccessor()
                 .AddScoped<HttpContextAccessor>();
@@ -33,7 +38,7 @@ public static class ConfigurationExtensions
 
         services.AddDbContext<CloudContext>(options =>
         {
-            string source = Path.Combine(contextOptions.Location, contextOptions.FileName);
+            string source = Path.Combine(databaseContextOptions.Location, databaseContextOptions.FileName);
 
             string connectionStringBase = $"Data Source={source};";
 
@@ -81,6 +86,62 @@ public static class ConfigurationExtensions
         else
         {
             databaseContext.Database.EnsureCreated();
+        }
+
+        return application;
+    }
+
+    public static IServiceCollection AddGoogleCloudIdentity(this IServiceCollection services, IConfiguration configuration)
+    {
+        IConfigurationSection configurationSection = configuration.GetSection(GoogleCloudIdentityOptions.SegmentName);
+
+        ArgumentNullException.ThrowIfNull(configurationSection);
+
+        GoogleCloudIdentityOptions? identityProviderOptions = configurationSection.Get<GoogleCloudIdentityOptions>();
+
+        ArgumentNullException.ThrowIfNull(identityProviderOptions);
+
+        services.AddSingleton<IValidator<GoogleCloudIdentityOptions>, GoogleCloudIdentityOptionsValidator>();
+
+        services
+            .AddOptions<GoogleCloudIdentityOptions>()
+            .Bind(configurationSection)
+            .ValidateFluently()
+            .ValidateOnStart();
+
+        services
+            .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie();
+
+        services
+            .AddAuthentication()
+            .AddGoogle(options =>
+            {
+                options.ClientId = identityProviderOptions.ClientID;
+                options.ClientSecret = identityProviderOptions.ClientSecret;
+                options.CallbackPath = identityProviderOptions.CallbackPath;
+                options.SaveTokens = true;
+                options.ClaimActions.MapAll();
+            });
+
+        services.AddHttpContextAccessor();
+        services.AddScoped<HttpContextAccessor>();
+
+        services.AddHttpClient();
+        services.AddScoped<HttpClient>();
+
+        services.AddScoped<AuthenticationStateProvider, BlazorAuthenticationStateProvider>();
+
+        return services;
+    }
+
+    public static WebApplication UseSecurityHeaders(this WebApplication application)
+    {
+        IWebHostEnvironment environment = application.Environment;
+
+        if (!environment.IsDevelopment())
+        {
+            application.UseSecurityHeaders(SecurityHeaderHelpers.GetHeaderPolicyCollection());
         }
 
         return application;

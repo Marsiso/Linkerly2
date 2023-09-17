@@ -1,3 +1,35 @@
-﻿@page "/"
+﻿@attribute [Route(Routes.Index)]
 
-<h1>Hello, world!</h1>
+@using System.Security.Claims;
+@using Linkerly.Application.ViewModels
+
+@if (Claims is { Count: > 0 })
+{
+    <MudTable Items="@Claims">
+        <HeaderContent>
+            <MudTh>Type</MudTh>
+            <MudTh>Value</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Type">@context.Type</MudTd>
+            <MudTd DataLabel="Value">@context.Value</MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+
+
+@code{
+    [Inject]
+    public required AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+
+    public ICollection<Claim>? Claims { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        ClaimsPrincipal claimsPrincipal = authenticationState.User;
+
+        Claims = claimsPrincipal.Claims.ToList();
+    }
+}

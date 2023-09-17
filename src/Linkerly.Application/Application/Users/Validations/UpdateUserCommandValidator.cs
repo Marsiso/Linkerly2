@@ -10,7 +10,7 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
         RuleFor(user => user.UserID)
             .GreaterThan(0)
             .WithMessage("Pole je požadováno.");
-        
+
         RuleFor(user => user.Identifier)
             .NotEmpty()
             .WithMessage("Pole je požadováno.")
@@ -24,7 +24,7 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
             .WithMessage("Emailová adresa uživatele může obsahovat nejvýše 256 znaků.")
             .EmailAddress()
             .WithMessage("Emailová adresa uživatele má neplatný formát.");
-        
+
         RuleFor(user => user.Name)
             .NotEmpty()
             .WithMessage("Pole je požadováno.")
