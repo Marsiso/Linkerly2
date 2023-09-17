@@ -6,10 +6,10 @@ namespace Linkerly.Data.Application.Configurations.Common;
 
 public class EntityBaseDatabaseMappingConfiguration<TEntity> : IEntityTypeConfiguration<TEntity> where TEntity : EntityBase
 {
-	public virtual void Configure(EntityTypeBuilder<TEntity> builder)
-	{
-		builder.HasIndex(entity => entity.IsActive);
+    public virtual void Configure(EntityTypeBuilder<TEntity> builder)
+    {
+        builder.HasIndex(entity => entity.IsActive);
 
-		builder.HasQueryFilter(entity => entity.IsActive);
-	}
+        builder.HasQueryFilter(entity => entity.IsActive);
+    }
 }

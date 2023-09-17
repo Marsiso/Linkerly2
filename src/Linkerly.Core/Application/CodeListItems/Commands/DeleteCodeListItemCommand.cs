@@ -9,40 +9,40 @@ namespace Linkerly.Core.Application.CodeListItems.Commands;
 
 public class DeleteCodeListItemCommand : ICommand<Unit>
 {
-	public DeleteCodeListItemCommand(int codeListItemId)
-	{
-		CodeListItemID = codeListItemId;
-	}
+    public DeleteCodeListItemCommand(int codeListItemId)
+    {
+        CodeListItemID = codeListItemId;
+    }
 
-	public int CodeListItemID { get; }
+    public int CodeListItemID { get; }
 }
 
 public class DeleteCodeListItemCommandHandler : ICommandHandler<DeleteCodeListItemCommand, Unit>
 {
-	private readonly CloudContext _databaseContext;
+    private readonly CloudContext _databaseContext;
 
-	public DeleteCodeListItemCommandHandler(CloudContext databaseContext)
-	{
-		_databaseContext = databaseContext;
-	}
+    public DeleteCodeListItemCommandHandler(CloudContext databaseContext)
+    {
+        _databaseContext = databaseContext;
+    }
 
-	public Task<Unit> Handle(DeleteCodeListItemCommand request, CancellationToken cancellationToken)
-	{
-		ArgumentNullException.ThrowIfNull(request);
+    public Task<Unit> Handle(DeleteCodeListItemCommand request, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
 
-		cancellationToken.ThrowIfCancellationRequested();
+        cancellationToken.ThrowIfCancellationRequested();
 
-		var originalCodeListItem = _databaseContext.CodeListItems.AsTracking().SingleOrDefault(codeListItem => codeListItem.CodeListItemID == request.CodeListItemID);
+        CodeListItemEntity? originalCodeListItem = _databaseContext.CodeListItems.AsTracking().SingleOrDefault(codeListItem => codeListItem.CodeListItemID == request.CodeListItemID);
 
-		if (originalCodeListItem is null)
-		{
-			throw new EntityNotFoundException(request.CodeListItemID.ToString(), nameof(CodeListItemEntity));
-		}
+        if (originalCodeListItem is null)
+        {
+            throw new EntityNotFoundException(request.CodeListItemID.ToString(), nameof(CodeListItemEntity));
+        }
 
-		originalCodeListItem.IsActive = false;
+        originalCodeListItem.IsActive = false;
 
-		_ = _databaseContext.SaveChanges();
+        _ = _databaseContext.SaveChanges();
 
-		return Unit.Task;
-	}
+        return Unit.Task;
+    }
 }

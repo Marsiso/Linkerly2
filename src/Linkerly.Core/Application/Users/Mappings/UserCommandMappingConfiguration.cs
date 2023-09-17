@@ -6,10 +6,10 @@ namespace Linkerly.Core.Application.Users.Mappings;
 
 public class UserCommandMappingConfiguration : Profile
 {
-	public UserCommandMappingConfiguration()
-	{
-		CreateMap<UserEntity, CreateUserCommand>().ReverseMap();
-		CreateMap<UserEntity, UpdateUserCommand>().ReverseMap();
-		CreateMap<UserEntity, DeleteUserCommand>().ReverseMap();
-	}
+    public UserCommandMappingConfiguration()
+    {
+        CreateMap<UserEntity, CreateUserCommand>().ReverseMap();
+        CreateMap<UserEntity, UpdateUserCommand>().ReverseMap();
+        CreateMap<UserEntity, DeleteUserCommand>().ReverseMap();
+    }
 }

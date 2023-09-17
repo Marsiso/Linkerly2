@@ -4,10 +4,10 @@ namespace Linkerly.Application.ViewModels;
 
 public class PageLayout : LayoutComponentBase
 {
-	public bool IsSidebarVisible { get; set; }
+    public bool IsSidebarVisible { get; set; }
 
-	public void ToggleSidebar()
-	{
-		IsSidebarVisible = !IsSidebarVisible;
-	}
+    public void ToggleSidebar()
+    {
+        IsSidebarVisible = !IsSidebarVisible;
+    }
 }

@@ -7,54 +7,64 @@ namespace Linkerly.Data.Application.Configurations;
 
 public class UserEntityDatabaseMappingConfiguration : ChangeTrackingEntityDatabaseMappingConfiguration<UserEntity>
 {
-	public override void Configure(EntityTypeBuilder<UserEntity> builder)
-	{
-		base.Configure(builder);
+    public override void Configure(EntityTypeBuilder<UserEntity> builder)
+    {
+        base.Configure(builder);
 
-		builder.ToTable(Tables.Application.Users);
+        builder.ToTable(Tables.Application.Users);
 
-		builder.HasKey(user => user.UserID);
+        builder.HasKey(user => user.UserID);
+        
+        builder.HasIndex(user => user.Identifier)
+               .IsUnique();
 
-		builder.HasIndex(user => user.Email)
-			.IsUnique();
+        builder.HasIndex(user => user.Email)
+               .IsUnique();
 
-		builder.HasIndex(user => user.IsActive)
-			.IsUnique(false);
+        builder.HasIndex(user => user.IsActive)
+               .IsUnique(false);
 
-		builder.Property(user => user.UserID)
-			.IsRequired()
-			.ValueGeneratedOnAdd();
+        builder.Property(user => user.UserID)
+               .IsRequired()
+               .ValueGeneratedOnAdd();
 
-		builder.Property(user => user.FirstName)
-			.IsRequired()
-			.IsUnicode()
-			.HasMaxLength(256);
+        builder.Property(user => user.Identifier)
+               .IsRequired()
+               .IsUnicode(false)
+               .HasMaxLength(512);
+        
+        builder.Property(user => user.Email)
+               .IsRequired()
+               .IsUnicode(false)
+               .HasMaxLength(256);
 
-		builder.Property(user => user.LastName)
-			.IsRequired()
-			.IsUnicode()
-			.HasMaxLength(256);
+        builder.Property(user => user.Name)
+               .IsRequired()
+               .IsUnicode()
+               .HasMaxLength(1024);
 
-		builder.Property(user => user.Email)
-			.IsRequired()
-			.IsUnicode(false)
-			.HasMaxLength(256);
+        builder.Property(user => user.FirstName)
+               .IsRequired()
+               .IsUnicode()
+               .HasMaxLength(256);
 
-		builder.Property(user => user.ProfilePhotoUrl)
-			.IsRequired(false)
-			.IsUnicode(false)
-			.HasMaxLength(2048);
+        builder.Property(user => user.LastName)
+               .IsRequired()
+               .IsUnicode()
+               .HasMaxLength(256);
 
-		builder.HasOne(user => user.RootFolder)
-			.WithOne(folder => folder.User)
-			.HasForeignKey<FolderEntity>(folder => folder.UserID)
-			.IsRequired()
-			.OnDelete(DeleteBehavior.NoAction);
+        builder.Property(user => user.HasEmailConfirmed)
+               .IsRequired();
 
-		builder.HasOne(user => user.AccessToken)
-			.WithOne(token => token.User)
-			.HasForeignKey<AccessTokenEntity>(token => token.UserID)
-			.IsRequired()
-			.OnDelete(DeleteBehavior.NoAction);
-	}
+        builder.Property(user => user.ProfilePhotoURL)
+               .IsRequired(false)
+               .IsUnicode(false)
+               .HasMaxLength(2048);
+
+        builder.HasOne(user => user.RootFolder)
+               .WithOne(folder => folder.User)
+               .HasForeignKey<FolderEntity>(folder => folder.UserID)
+               .IsRequired()
+               .OnDelete(DeleteBehavior.NoAction);
+    }
 }

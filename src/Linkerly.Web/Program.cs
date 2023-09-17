@@ -3,18 +3,19 @@ using Linkerly.Domain.Application.Mappings;
 using Linkerly.Web;
 using MudBlazor.Services;
 
-var applicationBuilder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-applicationBuilder.Services.AddRazorPages();
-applicationBuilder.Services.AddServerSideBlazor();
+IServiceCollection services = builder.Services;
 
-applicationBuilder.Services.AddMudServices();
+services.AddRazorPages();
+services.AddServerSideBlazor();
 
-applicationBuilder.Services.AddSqlite(applicationBuilder.Configuration, applicationBuilder.Environment);
-applicationBuilder.Services.AddAutoMapper(typeof(UserEntityMappingConfiguration), typeof(UserCommandMappingConfiguration));
-applicationBuilder.Services.AddCqrs();
+services.AddMudServices()
+        .AddSqlite(builder.Configuration, builder.Environment)
+        .AddAutoMapper(typeof(UserEntityMappingConfiguration), typeof(UserCommandMappingConfiguration))
+        .AddCqrs();
 
-var application = applicationBuilder.Build();
+WebApplication application = builder.Build();
 
 application.UseSqliteSeeder();
 
@@ -31,7 +32,7 @@ application.Run();
 
 namespace Linkerly.Web
 {
-	public class Program
-	{
-	}
+    public class Program
+    {
+    }
 }

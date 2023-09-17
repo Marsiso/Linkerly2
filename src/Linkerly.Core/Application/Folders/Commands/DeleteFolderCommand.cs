@@ -9,40 +9,40 @@ namespace Linkerly.Core.Application.Folders.Commands;
 
 public class DeleteFolderCommand : ICommand<Unit>
 {
-	public DeleteFolderCommand(int folderId)
-	{
-		FolderID = folderId;
-	}
+    public DeleteFolderCommand(int folderID)
+    {
+        FolderID = folderID;
+    }
 
-	public int FolderID { get; }
+    public int FolderID { get; }
 }
 
 public class DeleteFolderCommandHandler : ICommandHandler<DeleteFolderCommand, Unit>
 {
-	private readonly CloudContext _databaseContext;
+    private readonly CloudContext _databaseContext;
 
-	public DeleteFolderCommandHandler(CloudContext databaseContext)
-	{
-		_databaseContext = databaseContext;
-	}
+    public DeleteFolderCommandHandler(CloudContext databaseContext)
+    {
+        _databaseContext = databaseContext;
+    }
 
-	public Task<Unit> Handle(DeleteFolderCommand request, CancellationToken cancellationToken)
-	{
-		ArgumentNullException.ThrowIfNull(request);
+    public Task<Unit> Handle(DeleteFolderCommand request, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
 
-		cancellationToken.ThrowIfCancellationRequested();
+        cancellationToken.ThrowIfCancellationRequested();
 
-		var originalFolder = _databaseContext.Folders.AsTracking().SingleOrDefault(folder => folder.FolderID == request.FolderID);
+        FolderEntity? originalFolder = _databaseContext.Folders.AsTracking().SingleOrDefault(folder => folder.FolderID == request.FolderID);
 
-		if (originalFolder is null)
-		{
-			throw new EntityNotFoundException(request.FolderID.ToString(), nameof(FolderEntity));
-		}
+        if (originalFolder is null)
+        {
+            throw new EntityNotFoundException(request.FolderID.ToString(), nameof(FolderEntity));
+        }
 
-		originalFolder.IsActive = false;
+        originalFolder.IsActive = false;
 
-		_ = _databaseContext.SaveChanges();
+        _ = _databaseContext.SaveChanges();
 
-		return Unit.Task;
-	}
+        return Unit.Task;
+    }
 }

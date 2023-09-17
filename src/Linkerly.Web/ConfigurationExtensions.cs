@@ -12,81 +12,77 @@ namespace Linkerly.Web;
 
 public static class ConfigurationExtensions
 {
-	public static IServiceCollection AddSqlite(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
-	{
-		services.AddSingleton<IValidator<CloudContextOptions>, CloudContextOptionsValidator>();
+    public static IServiceCollection AddSqlite(this IServiceCollection services, IConfiguration configuration,
+                                               IWebHostEnvironment environment)
+    {
+        services.AddSingleton<IValidator<CloudContextOptions>, CloudContextOptionsValidator>();
 
-		services
-			.AddOptions<CloudContextOptions>()
-			.Bind(configuration.GetSection(CloudContextOptions.SectionName))
-			.ValidateFluently()
-			.ValidateOnStart();
+        services.AddOptions<CloudContextOptions>()
+                .Bind(configuration.GetSection(CloudContextOptions.SectionName))
+                .ValidateFluently()
+                .ValidateOnStart();
 
-		var databaseContextOptions = configuration.GetSection(CloudContextOptions.SectionName).Get<CloudContextOptions>();
+        CloudContextOptions? contextOptions = configuration.GetSection(CloudContextOptions.SectionName).Get<CloudContextOptions>();
 
-		ArgumentNullException.ThrowIfNull(databaseContextOptions);
+        ArgumentNullException.ThrowIfNull(contextOptions);
 
-		services.AddHttpContextAccessor();
-		services.AddScoped<HttpContextAccessor>();
+        services.AddHttpContextAccessor()
+                .AddScoped<HttpContextAccessor>();
 
-		services.AddScoped<ISaveChangesInterceptor, Auditor>();
+        services.AddScoped<ISaveChangesInterceptor, Auditor>();
 
-		services.AddDbContext<CloudContext>(options =>
-		{
-			options.UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll);
-			options.UseSqlite();
+        services.AddDbContext<CloudContext>(options =>
+        {
+            string source = Path.Combine(contextOptions.Location, contextOptions.FileName);
 
-			var source = Path.Combine(databaseContextOptions.Location, databaseContextOptions.FileName);
+            string connectionStringBase = $"Data Source={source};";
 
-			var connectionStringBase = $"Data Source={source};";
+            string connectionString = new SqliteConnectionStringBuilder(connectionStringBase)
+            {
+                Mode = SqliteOpenMode.ReadWriteCreate,
+            }.ToString();
 
-			var connectionString = new SqliteConnectionStringBuilder(connectionStringBase)
-			{
-				Mode = SqliteOpenMode.ReadWriteCreate
-			}.ToString();
+            options.UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
+                   .UseSqlite(connectionString);
 
-			options.UseSqlite(connectionString);
+            if (environment.IsDevelopment())
+            {
+                options.EnableDetailedErrors()
+                       .EnableSensitiveDataLogging();
+            }
+        });
 
-			if (environment.IsDevelopment())
-			{
-				options.EnableDetailedErrors();
-				options.EnableSensitiveDataLogging();
-			}
-		});
+        return services;
+    }
 
-		return services;
-	}
+    public static IServiceCollection AddCqrs(this IServiceCollection services)
+    {
+        services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(GetUserQuery).Assembly))
+                .AddValidatorsFromAssembly(typeof(FluentValidationPipelineBehaviour<,>).Assembly, ServiceLifetime.Singleton)
+                .AddTransient(typeof(IPipelineBehavior<,>), typeof(FluentValidationPipelineBehaviour<,>));
 
-	public static IServiceCollection AddCqrs(this IServiceCollection services)
-	{
-		services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(GetUserQuery).Assembly));
+        return services;
+    }
 
-		services.AddValidatorsFromAssembly(typeof(FluentValidationPipelineBehaviour<,>).Assembly, ServiceLifetime.Singleton);
+    public static WebApplication UseSqliteSeeder(this WebApplication application)
+    {
+        IServiceProvider services = application.Services;
+        IWebHostEnvironment environment = application.Environment;
 
-		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(FluentValidationPipelineBehaviour<,>));
+        using IServiceScope serviceScope = services.CreateScope();
 
-		return services;
-	}
+        CloudContext databaseContext = serviceScope.ServiceProvider.GetRequiredService<CloudContext>();
 
-	public static WebApplication UseSqliteSeeder(this WebApplication application)
-	{
-		var services = application.Services;
-		var environment = application.Environment;
+        if (environment.IsDevelopment())
+        {
+            databaseContext.Database.EnsureDeleted();
+            databaseContext.Database.EnsureCreated();
+        }
+        else
+        {
+            databaseContext.Database.EnsureCreated();
+        }
 
-		using var serviceScope = services.CreateScope();
-
-		var databaseContext = serviceScope.ServiceProvider.GetRequiredService<CloudContext>();
-
-		if (environment.IsDevelopment())
-		{
-			databaseContext.Database.EnsureDeleted();
-			databaseContext.Database.EnsureCreated();
-		}
-		else
-		{
-			databaseContext.Database.EnsureCreated();
-		}
-
-		return application;
-	}
+        return application;
+    }
 }

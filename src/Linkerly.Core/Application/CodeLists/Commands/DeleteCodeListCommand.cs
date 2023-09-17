@@ -9,40 +9,40 @@ namespace Linkerly.Core.Application.CodeLists.Commands;
 
 public class DeleteCodeListCommand : ICommand<Unit>
 {
-	public DeleteCodeListCommand(int codeListID)
-	{
-		CodeListID = codeListID;
-	}
+    public DeleteCodeListCommand(int codeListID)
+    {
+        CodeListID = codeListID;
+    }
 
-	public int CodeListID { get; }
+    public int CodeListID { get; }
 }
 
 public class DeleteCodeListCommandHandler : ICommandHandler<DeleteCodeListCommand, Unit>
 {
-	private readonly CloudContext _databaseContext;
+    private readonly CloudContext _databaseContext;
 
-	public DeleteCodeListCommandHandler(CloudContext databaseContext)
-	{
-		_databaseContext = databaseContext;
-	}
+    public DeleteCodeListCommandHandler(CloudContext databaseContext)
+    {
+        _databaseContext = databaseContext;
+    }
 
-	public Task<Unit> Handle(DeleteCodeListCommand request, CancellationToken cancellationToken)
-	{
-		ArgumentNullException.ThrowIfNull(request);
+    public Task<Unit> Handle(DeleteCodeListCommand request, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
 
-		cancellationToken.ThrowIfCancellationRequested();
+        cancellationToken.ThrowIfCancellationRequested();
 
-		var originalCodeList = _databaseContext.CodeLists.AsTracking().SingleOrDefault(codeList => codeList.CodeListID == request.CodeListID);
+        CodeListEntity? originalCodeList = _databaseContext.CodeLists.AsTracking().SingleOrDefault(codeList => codeList.CodeListID == request.CodeListID);
 
-		if (originalCodeList is null)
-		{
-			throw new EntityNotFoundException(request.CodeListID.ToString(), nameof(CodeListEntity));
-		}
+        if (originalCodeList is null)
+        {
+            throw new EntityNotFoundException(request.CodeListID.ToString(), nameof(CodeListEntity));
+        }
 
-		originalCodeList.IsActive = false;
+        originalCodeList.IsActive = false;
 
-		_ = _databaseContext.SaveChanges();
+        _ = _databaseContext.SaveChanges();
 
-		return Unit.Task;
-	}
+        return Unit.Task;
+    }
 }
