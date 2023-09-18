@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Linkerly.Data.Application.Configurations;
 
 public class
-    CodeListItemDatabaseMappingConfiguration : ChangeTrackingEntityDatabaseMappingConfiguration<CodeListItemEntity>
+    CodeListItemEntityDatabaseMappingConfiguration : ChangeTrackingEntityDatabaseMappingConfiguration<CodeListItemEntity>
 {
     public override void Configure(EntityTypeBuilder<CodeListItemEntity> builder)
     {
