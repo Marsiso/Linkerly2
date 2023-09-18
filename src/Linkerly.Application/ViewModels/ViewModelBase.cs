@@ -31,10 +31,7 @@ public class ViewModelBase : INotifyPropertyChanged
 
     protected void SetValue<TItem>(ref TItem field, TItem value, [CallerMemberName] string propertyName = default!)
     {
-        if (EqualityComparer<TItem>.Default.Equals(field, value))
-        {
-            return;
-        }
+        if (EqualityComparer<TItem>.Default.Equals(field, value)) return;
 
         field = value;
 

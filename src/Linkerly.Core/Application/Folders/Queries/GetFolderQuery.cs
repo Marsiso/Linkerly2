@@ -32,12 +32,9 @@ public class GetFolderQueryHandler : IQueryHandler<GetFolderQuery, FolderEntity?
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (request.FolderID < 1)
-        {
-            return Task.FromResult<FolderEntity?>(default);
-        }
+        if (request.FolderID < 1) return Task.FromResult<FolderEntity?>(default);
 
-        FolderEntity? originalFolder = _query(_databaseContext, request.FolderID);
+        var originalFolder = _query(_databaseContext, request.FolderID);
 
         return Task.FromResult(originalFolder);
     }

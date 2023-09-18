@@ -32,12 +32,9 @@ public class GetFileQueryHandler : IQueryHandler<GetFileQuery, FileEntity?>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (request.FileID < 0)
-        {
-            return Task.FromResult<FileEntity?>(default);
-        }
+        if (request.FileID < 0) return Task.FromResult<FileEntity?>(default);
 
-        FileEntity? originalEntity = _query(_databaseContext, request.FileID);
+        var originalEntity = _query(_databaseContext, request.FileID);
 
         return Task.FromResult(originalEntity);
     }

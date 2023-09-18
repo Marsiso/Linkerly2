@@ -16,35 +16,35 @@ public class FolderEntityDatabaseMappingConfiguration : ChangeTrackingEntityData
         builder.HasKey(folder => folder.FolderID);
 
         builder.HasIndex(folder => folder.UserID)
-               .IsUnique(false);
+            .IsUnique(false);
 
         builder.HasIndex(folder => folder.TypeID)
-               .IsUnique(false);
+            .IsUnique(false);
 
         builder.HasIndex(folder => folder.ParentID)
-               .IsUnique(false);
+            .IsUnique(false);
 
         builder.Property(folder => folder.Name)
-               .IsRequired()
-               .IsUnicode()
-               .HasMaxLength(256);
+            .IsRequired()
+            .IsUnicode()
+            .HasMaxLength(256);
 
         builder.Property(folder => folder.TotalSize)
-               .IsRequired();
+            .IsRequired();
 
         builder.Property(folder => folder.TotalCount)
-               .IsRequired();
+            .IsRequired();
 
         builder.HasOne(folder => folder.Parent)
-               .WithMany(folder => folder.Children)
-               .HasForeignKey(folder => folder.ParentID)
-               .IsRequired(false)
-               .OnDelete(DeleteBehavior.NoAction);
+            .WithMany(folder => folder.Children)
+            .HasForeignKey(folder => folder.ParentID)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.HasOne(folder => folder.Type)
-               .WithMany()
-               .HasForeignKey(folder => folder.TypeID)
-               .IsRequired()
-               .OnDelete(DeleteBehavior.NoAction);
+            .WithMany()
+            .HasForeignKey(folder => folder.TypeID)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

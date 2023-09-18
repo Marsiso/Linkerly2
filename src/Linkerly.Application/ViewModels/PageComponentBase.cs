@@ -32,10 +32,7 @@ public class PageComponentBase<TViewModel> : ComponentBase where TViewModel : Vi
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-        {
-            return Model.OnViewModelAfterRender();
-        }
+        if (firstRender) return Model.OnViewModelAfterRender();
 
         return base.OnAfterRenderAsync(firstRender);
     }

@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using FluentValidation.Results;
 using Linkerly.Domain.Exceptions;
 using Linkerly.Domain.Validations;
 using MediatR;
@@ -19,21 +18,15 @@ public class FluentValidationPipelineBehaviour<TRequest, TResponse> : IPipelineB
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        if (!_validators.Any())
-        {
-            return await next();
-        }
+        if (!_validators.Any()) return await next();
 
-        ValidationContext<TRequest> validationContext = new ValidationContext<TRequest>(request);
+        var validationContext = new ValidationContext<TRequest>(request);
 
-        IEnumerable<ValidationResult> validationResults = _validators.Select(validator => validator.Validate(validationContext));
+        var validationResults = _validators.Select(validator => validator.Validate(validationContext));
 
-        Dictionary<string, string[]> validationFailures = validationResults.DistinctErrorsByProperty();
+        var validationFailures = validationResults.DistinctErrorsByProperty();
 
-        if (validationFailures.Any())
-        {
-            throw new EntityValidationException(validationFailures);
-        }
+        if (validationFailures.Any()) throw new EntityValidationException(validationFailures);
 
         return await next();
     }

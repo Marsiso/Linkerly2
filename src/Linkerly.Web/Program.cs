@@ -3,25 +3,25 @@ using Linkerly.Domain.Application.Mappings;
 using Linkerly.Web;
 using MudBlazor.Services;
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
-IServiceCollection services = builder.Services;
+var services = builder.Services;
 IConfiguration configuration = builder.Configuration;
-IWebHostEnvironment environment = builder.Environment;
+var environment = builder.Environment;
 
 services.AddRazorPages();
 services.AddServerSideBlazor();
 
 services.AddMudServices()
-        .AddSqlite(configuration, environment)
-        .AddAutoMapper(typeof(UserEntityMappingConfiguration), typeof(UserCommandMappingConfiguration))
-        .AddCqrs()
-        .AddGoogleCloudIdentity(configuration);
+    .AddSqlite(configuration, environment)
+    .AddAutoMapper(typeof(UserEntityMappingConfiguration), typeof(UserCommandMappingConfiguration))
+    .AddCqrs()
+    .AddGoogleCloudIdentity(configuration);
 
-WebApplication application = builder.Build();
+var application = builder.Build();
 
 application.UseSqliteSeeder()
-           .UseSecurityHeaders();
+    .UseSecurityHeaders();
 
 application.UseHttpsRedirection();
 

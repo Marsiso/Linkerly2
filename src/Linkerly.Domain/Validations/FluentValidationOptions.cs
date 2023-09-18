@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using FluentValidation.Results;
 using Microsoft.Extensions.Options;
 
 namespace Linkerly.Domain.Validations;
@@ -18,26 +17,20 @@ public class FluentValidationOptions<TOptions> : IValidateOptions<TOptions> wher
 
     public ValidateOptionsResult Validate(string? optionsName, TOptions options)
     {
-        if (optionsName is not null && !optionsName.Equals(Name, StringComparison.OrdinalIgnoreCase))
-        {
-            return ValidateOptionsResult.Skip;
-        }
+        if (optionsName is not null && !optionsName.Equals(Name, StringComparison.OrdinalIgnoreCase)) return ValidateOptionsResult.Skip;
 
         ArgumentNullException.ThrowIfNull(options);
 
-        ValidationContext<TOptions> validationContext = new ValidationContext<TOptions>(options);
+        var validationContext = new ValidationContext<TOptions>(options);
 
-        ValidationResult? validationResult = OptionsValidator.Validate(validationContext);
+        var validationResult = OptionsValidator.Validate(validationContext);
 
-        if (validationResult.IsValid)
-        {
-            return ValidateOptionsResult.Success;
-        }
+        if (validationResult.IsValid) return ValidateOptionsResult.Success;
 
-        Dictionary<string, string[]> validationFailures = validationResult.DistinctErrorsByProperty();
+        var validationFailures = validationResult.DistinctErrorsByProperty();
 
-        string failureMessage = validationFailures.Select(kvp => $"Options '{typeof(TOptions).Name}' has validation failures. Property: '{kvp.Key}' Failures: '{string.Join(" ", kvp.Value)}'.")
-                                                  .Aggregate((l, r) => string.Join(" ", l, r));
+        var failureMessage = validationFailures.Select(kvp => $"Options '{typeof(TOptions).Name}' has validation failures. Property: '{kvp.Key}' Failures: '{string.Join(" ", kvp.Value)}'.")
+            .Aggregate((l, r) => string.Join(" ", l, r));
 
         return ValidateOptionsResult.Fail(failureMessage);
     }

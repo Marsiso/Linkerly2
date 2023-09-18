@@ -11,21 +11,21 @@ public class ChangeTrackingEntityDatabaseMappingConfiguration<TChangeTrackingEnt
         base.Configure(builder);
 
         builder.Property(entity => entity.DateCreated)
-               .HasDefaultValueSql("datetime('now', 'localtime')")
-               .ValueGeneratedOnAdd();
+            .HasDefaultValueSql("datetime('now', 'localtime')")
+            .ValueGeneratedOnAdd();
 
         builder.Property(entity => entity.DateUpdated)
-               .HasDefaultValueSql("datetime('now', 'localtime')")
-               .ValueGeneratedOnAddOrUpdate();
+            .HasDefaultValueSql("datetime('now', 'localtime')")
+            .ValueGeneratedOnAddOrUpdate();
 
         builder.HasOne(entity => entity.UserCreatedBy)
-               .WithMany()
-               .HasForeignKey(entity => entity.CreatedBy)
-               .OnDelete(DeleteBehavior.NoAction);
+            .WithMany()
+            .HasForeignKey(entity => entity.CreatedBy)
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.HasOne(entity => entity.UserUpdatedBy)
-               .WithMany()
-               .HasForeignKey(entity => entity.UpdatedBy)
-               .OnDelete(DeleteBehavior.NoAction);
+            .WithMany()
+            .HasForeignKey(entity => entity.UpdatedBy)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

@@ -32,12 +32,9 @@ public class GetUserQueryHandler : IQueryHandler<GetUserQuery, UserEntity?>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (request.UserID < 1)
-        {
-            return Task.FromResult<UserEntity?>(default);
-        }
+        if (request.UserID < 1) return Task.FromResult<UserEntity?>(default);
 
-        UserEntity? originalUser = _query(_databaseContext, request.UserID);
+        var originalUser = _query(_databaseContext, request.UserID);
 
         return Task.FromResult(originalUser);
     }

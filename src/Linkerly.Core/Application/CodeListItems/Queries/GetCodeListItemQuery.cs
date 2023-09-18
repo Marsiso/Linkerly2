@@ -32,12 +32,9 @@ public class GetCodeListItemQueryHandler : IQueryHandler<GetCodeListItemQuery, C
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (request.CodeListItemID < 1)
-        {
-            return Task.FromResult<CodeListItemEntity?>(default);
-        }
+        if (request.CodeListItemID < 1) return Task.FromResult<CodeListItemEntity?>(default);
 
-        CodeListItemEntity? originalCodeList = _query(_databaseContext, request.CodeListItemID);
+        var originalCodeList = _query(_databaseContext, request.CodeListItemID);
 
         return Task.FromResult(originalCodeList);
     }

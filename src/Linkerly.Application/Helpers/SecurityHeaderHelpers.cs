@@ -6,7 +6,7 @@ public static class SecurityHeaderHelpers
 {
     public static HeaderPolicyCollection GetHeaderPolicyCollection()
     {
-        HeaderPolicyCollection headerPolicyCollection = new HeaderPolicyCollection();
+        var headerPolicyCollection = new HeaderPolicyCollection();
 
         headerPolicyCollection.AddFrameOptionsDeny();
         headerPolicyCollection.AddXssProtectionBlock();

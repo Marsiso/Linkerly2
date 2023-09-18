@@ -45,7 +45,7 @@ public class CreateFileCommandHandler : ICommandHandler<CreateFileCommand, Unit>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        FileEntity? fileToCreate = _mapper.Map<FileEntity>(request);
+        var fileToCreate = _mapper.Map<FileEntity>(request);
 
         _ = _databaseContext.Files.Add(fileToCreate);
 

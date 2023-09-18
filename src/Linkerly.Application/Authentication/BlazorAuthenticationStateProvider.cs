@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
 using Linkerly.Core.Application.Users.Commands;
 using Linkerly.Core.Application.Users.Queries;
-using Linkerly.Domain.Application.Models;
 using MediatR;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -24,24 +23,21 @@ public class BlazorAuthenticationStateProvider : AuthenticationStateProvider
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        HttpContext? httpContext = _httpContextAccessor.HttpContext;
+        var httpContext = _httpContextAccessor.HttpContext;
 
-        if (httpContext is null)
-        {
-            return GetAnonymousAuthenticationState();
-        }
+        if (httpContext is null) return GetAnonymousAuthenticationState();
 
-        ClaimsPrincipal claimsPrincipal = httpContext.User;
+        var claimsPrincipal = httpContext.User;
 
         try
         {
-            GetUserByIdentifierQuery getUserQuery = new GetUserByIdentifierQuery(claimsPrincipal.FindFirstValue("id"));
+            var getUserQuery = new GetUserByIdentifierQuery(claimsPrincipal.FindFirstValue("id"));
 
-            UserEntity? originalUser = await _messageHandlerBroker.Send(getUserQuery);
+            var originalUser = await _messageHandlerBroker.Send(getUserQuery);
 
             if (originalUser is null)
             {
-                CreateUserCommand createUserCommand = new CreateUserCommand(
+                var createUserCommand = new CreateUserCommand(
                     claimsPrincipal.FindFirstValue("id"),
                     claimsPrincipal.FindFirstValue("email"),
                     "true".Equals(claimsPrincipal.FindFirstValue("verified_email"), StringComparison.OrdinalIgnoreCase),
@@ -54,7 +50,7 @@ public class BlazorAuthenticationStateProvider : AuthenticationStateProvider
             }
             else
             {
-                UpdateUserCommand updateUserCommand = new UpdateUserCommand(
+                var updateUserCommand = new UpdateUserCommand(
                     originalUser.UserID,
                     claimsPrincipal.FindFirstValue("id"),
                     claimsPrincipal.FindFirstValue("email"),
@@ -79,9 +75,9 @@ public class BlazorAuthenticationStateProvider : AuthenticationStateProvider
 
     private static AuthenticationState GetAnonymousAuthenticationState()
     {
-        ClaimsIdentity claimsIdentity = new ClaimsIdentity();
-        ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-        AuthenticationState authenticationState = new AuthenticationState(claimsPrincipal);
+        var claimsIdentity = new ClaimsIdentity();
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+        var authenticationState = new AuthenticationState(claimsPrincipal);
 
         return authenticationState;
     }

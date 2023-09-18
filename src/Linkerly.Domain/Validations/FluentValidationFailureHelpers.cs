@@ -6,23 +6,20 @@ public static class FluentValidationFailureHelpers
 {
     public static Dictionary<string, string[]> DistinctErrorsByProperty(this ValidationResult? validationResult)
     {
-        if (validationResult is null)
-        {
-            return new Dictionary<string, string[]>();
-        }
+        if (validationResult is null) return new Dictionary<string, string[]>();
 
         List<ValidationFailure>? validationFailures = validationResult.Errors;
 
-        Dictionary<string, string[]> validationFailuresByProperties = validationFailures.GroupBy(validationFailure => validationFailure.PropertyName,
-                                                                                                 validationFailure => validationFailure.ErrorMessage,
-                                                                                                 (propertyName, validationFailuresByProperty) => new
-                                                                                                 {
-                                                                                                     Key = propertyName,
-                                                                                                     Values = validationFailuresByProperty.Distinct().ToArray(),
-                                                                                                 })
-                                                                                        .ToDictionary(
-                                                                                            group => group.Key,
-                                                                                            group => group.Values);
+        var validationFailuresByProperties = validationFailures.GroupBy(validationFailure => validationFailure.PropertyName,
+                validationFailure => validationFailure.ErrorMessage,
+                (propertyName, validationFailuresByProperty) => new
+                {
+                    Key = propertyName,
+                    Values = validationFailuresByProperty.Distinct().ToArray()
+                })
+            .ToDictionary(
+                group => group.Key,
+                group => group.Values);
 
         return validationFailuresByProperties;
     }
@@ -30,24 +27,21 @@ public static class FluentValidationFailureHelpers
     public static Dictionary<string, string[]> DistinctErrorsByProperty(
         this IEnumerable<ValidationResult>? validationResults)
     {
-        if (validationResults is null)
-        {
-            return new Dictionary<string, string[]>();
-        }
+        if (validationResults is null) return new Dictionary<string, string[]>();
 
-        Dictionary<string, string[]> validationFailuresByProperties = validationResults.Where(validationResult => validationResult is { IsValid: false, Errors: not null, Errors.Count: > 0, })
-                                                                                       .SelectMany(validationResult => validationResult.Errors, (_, vf) => vf)
-                                                                                       .GroupBy(
-                                                                                           validationFailure => validationFailure.PropertyName,
-                                                                                           validationFailure => validationFailure.ErrorMessage,
-                                                                                           (propertyName, validationFailuresByProperty) => new
-                                                                                           {
-                                                                                               Key = propertyName,
-                                                                                               Values = validationFailuresByProperty.Distinct().ToArray(),
-                                                                                           })
-                                                                                       .ToDictionary(
-                                                                                           group => group.Key,
-                                                                                           group => group.Values);
+        var validationFailuresByProperties = validationResults.Where(validationResult => validationResult is { IsValid: false, Errors: not null, Errors.Count: > 0 })
+            .SelectMany(validationResult => validationResult.Errors, (_, vf) => vf)
+            .GroupBy(
+                validationFailure => validationFailure.PropertyName,
+                validationFailure => validationFailure.ErrorMessage,
+                (propertyName, validationFailuresByProperty) => new
+                {
+                    Key = propertyName,
+                    Values = validationFailuresByProperty.Distinct().ToArray()
+                })
+            .ToDictionary(
+                group => group.Key,
+                group => group.Values);
 
         return validationFailuresByProperties;
     }

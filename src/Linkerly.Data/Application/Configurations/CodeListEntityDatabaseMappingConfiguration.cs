@@ -16,8 +16,8 @@ public class CodeListEntityDatabaseMappingConfiguration : ChangeTrackingEntityDa
         builder.HasKey(codeList => codeList.CodeListID);
 
         builder.Property(codeList => codeList.Name)
-               .IsRequired()
-               .IsUnicode()
-               .HasMaxLength(256);
+            .IsRequired()
+            .IsUnicode()
+            .HasMaxLength(256);
     }
 }

@@ -47,12 +47,9 @@ public class UpdateFolderCommandHandler : IQueryHandler<UpdateFolderCommand, Uni
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        FolderEntity? originalFolder = _databaseContext.Folders.AsTracking().SingleOrDefault(folder => folder.FolderID == request.FolderID);
+        var originalFolder = _databaseContext.Folders.AsTracking().SingleOrDefault(folder => folder.FolderID == request.FolderID);
 
-        if (originalFolder is null)
-        {
-            throw new EntityNotFoundException(request.FolderID.ToString(), nameof(FolderEntity));
-        }
+        if (originalFolder is null) throw new EntityNotFoundException(request.FolderID.ToString(), nameof(FolderEntity));
 
         _ = _mapper.Map(request, originalFolder);
 

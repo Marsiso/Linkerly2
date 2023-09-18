@@ -35,7 +35,7 @@ public class CreateCodeListItemCommandHandler : ICommandHandler<CreateCodeListIt
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        CodeListItemEntity? codeListItemToCreate = _mapper.Map<CodeListItemEntity>(request);
+        var codeListItemToCreate = _mapper.Map<CodeListItemEntity>(request);
 
         _ = _databaseContext.CodeListItems.Add(codeListItemToCreate);
 

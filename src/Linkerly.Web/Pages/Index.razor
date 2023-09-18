@@ -2,7 +2,7 @@
 @using Linkerly.Application.ViewModels
 @attribute [Route(Routes.Index)]
 
-@if (Claims is { Count: > 0, })
+@if (Claims is { Count: > 0 })
 {
     <MudTable Items="@Claims">
         <HeaderContent>
@@ -26,9 +26,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
-        ClaimsPrincipal claimsPrincipal = authenticationState.User;
+        var claimsPrincipal = authenticationState.User;
 
         Claims = claimsPrincipal.Claims.ToList();
     }

@@ -32,12 +32,9 @@ public class GetAllFolderFilesQueryHandler : IQueryHandler<GetAllFolderFilesQuer
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (request.FolderID < 1)
-        {
-            return Task.FromResult(Enumerable.Empty<FileEntity>());
-        }
+        if (request.FolderID < 1) return Task.FromResult(Enumerable.Empty<FileEntity>());
 
-        IEnumerable<FileEntity> originalFiles = _query(_databaseContext, request.FolderID);
+        var originalFiles = _query(_databaseContext, request.FolderID);
 
         return Task.FromResult(originalFiles);
     }

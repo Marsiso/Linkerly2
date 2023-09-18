@@ -32,12 +32,9 @@ public class DeleteCodeListItemCommandHandler : ICommandHandler<DeleteCodeListIt
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        CodeListItemEntity? originalCodeListItem = _databaseContext.CodeListItems.AsTracking().SingleOrDefault(codeListItem => codeListItem.CodeListItemID == request.CodeListItemID);
+        var originalCodeListItem = _databaseContext.CodeListItems.AsTracking().SingleOrDefault(codeListItem => codeListItem.CodeListItemID == request.CodeListItemID);
 
-        if (originalCodeListItem is null)
-        {
-            throw new EntityNotFoundException(request.CodeListItemID.ToString(), nameof(CodeListItemEntity));
-        }
+        if (originalCodeListItem is null) throw new EntityNotFoundException(request.CodeListItemID.ToString(), nameof(CodeListItemEntity));
 
         originalCodeListItem.IsActive = false;
 

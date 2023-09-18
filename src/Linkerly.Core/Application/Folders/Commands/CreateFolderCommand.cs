@@ -43,7 +43,7 @@ public class CreateFolderCommandHandler : ICommandHandler<CreateFolderCommand, U
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        FolderEntity? folderToCreate = _mapper.Map<FolderEntity>(request);
+        var folderToCreate = _mapper.Map<FolderEntity>(request);
 
         _ = _databaseContext.Folders.Add(folderToCreate);
 

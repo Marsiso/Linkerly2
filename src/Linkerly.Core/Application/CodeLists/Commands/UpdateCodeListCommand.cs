@@ -37,12 +37,9 @@ public class UpdateCodeListCommandHandler : ICommandHandler<UpdateCodeListComman
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        CodeListEntity? originalCodeList = _databaseContext.CodeLists.AsTracking().SingleOrDefault(codeList => codeList.CodeListID == request.CodeListID);
+        var originalCodeList = _databaseContext.CodeLists.AsTracking().SingleOrDefault(codeList => codeList.CodeListID == request.CodeListID);
 
-        if (originalCodeList is null)
-        {
-            throw new EntityNotFoundException(request.CodeListID.ToString(), nameof(CodeListEntity));
-        }
+        if (originalCodeList is null) throw new EntityNotFoundException(request.CodeListID.ToString(), nameof(CodeListEntity));
 
         _ = _mapper.Map(request, originalCodeList);
 

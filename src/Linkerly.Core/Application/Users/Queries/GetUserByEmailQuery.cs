@@ -32,12 +32,9 @@ public class GetUserByEmailQueryHandler : IQueryHandler<GetUserByEmailQuery, Use
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (string.IsNullOrWhiteSpace(request.Email))
-        {
-            return Task.FromResult<UserEntity?>(default);
-        }
+        if (string.IsNullOrWhiteSpace(request.Email)) return Task.FromResult<UserEntity?>(default);
 
-        UserEntity? originalUser = _query(_databaseContext, request.Email);
+        var originalUser = _query(_databaseContext, request.Email);
 
         return Task.FromResult(originalUser);
     }

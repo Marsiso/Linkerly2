@@ -17,17 +17,17 @@ public class
         builder.HasKey(codeListItem => codeListItem.CodeListItemID);
 
         builder.HasIndex(codeListItem => codeListItem.CodeListID)
-               .IsUnique(false);
+            .IsUnique(false);
 
         builder.Property(codeListItem => codeListItem.Value)
-               .IsRequired()
-               .IsUnicode()
-               .HasMaxLength(256);
+            .IsRequired()
+            .IsUnicode()
+            .HasMaxLength(256);
 
         builder.HasOne(codeListItem => codeListItem.CodeList)
-               .WithMany(codeList => codeList.Items)
-               .HasForeignKey(codeListItem => codeListItem.CodeListID)
-               .IsRequired()
-               .OnDelete(DeleteBehavior.NoAction);
+            .WithMany(codeList => codeList.Items)
+            .HasForeignKey(codeListItem => codeListItem.CodeListID)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

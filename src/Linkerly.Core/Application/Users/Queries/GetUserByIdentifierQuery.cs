@@ -32,12 +32,9 @@ public class GetUserByIdentifierQueryHandler : IQueryHandler<GetUserByIdentifier
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (string.IsNullOrWhiteSpace(request.Identifier))
-        {
-            return Task.FromResult<UserEntity?>(default);
-        }
+        if (string.IsNullOrWhiteSpace(request.Identifier)) return Task.FromResult<UserEntity?>(default);
 
-        UserEntity? originalUser = _query(_databaseContext, request.Identifier);
+        var originalUser = _query(_databaseContext, request.Identifier);
 
         return Task.FromResult(originalUser);
     }

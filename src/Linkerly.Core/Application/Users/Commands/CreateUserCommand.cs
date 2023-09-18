@@ -47,7 +47,7 @@ public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, Unit>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        UserEntity? userToCreate = _mapper.Map<UserEntity>(request);
+        var userToCreate = _mapper.Map<UserEntity>(request);
 
         _ = _databaseContext.Users.Add(userToCreate);
 

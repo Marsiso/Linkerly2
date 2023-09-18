@@ -51,12 +51,9 @@ public class UpdateUserCommandHandler : ICommandHandler<UpdateUserCommand, Unit>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        UserEntity? originalUser = _databaseContext.Users.AsTracking().SingleOrDefault(user => user.UserID == request.UserID);
+        var originalUser = _databaseContext.Users.AsTracking().SingleOrDefault(user => user.UserID == request.UserID);
 
-        if (originalUser is null)
-        {
-            throw new EntityNotFoundException(request.UserID.ToString(), nameof(UserEntity));
-        }
+        if (originalUser is null) throw new EntityNotFoundException(request.UserID.ToString(), nameof(UserEntity));
 
         _ = _mapper.Map(request, originalUser);
 

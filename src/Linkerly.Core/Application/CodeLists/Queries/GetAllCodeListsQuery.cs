@@ -26,7 +26,7 @@ public class GetAllCodeListsQueryHandler : IQueryHandler<GetAllCodeListsQuery, I
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        IEnumerable<CodeListEntity> originalCodeLists = _query(_databaseContext);
+        var originalCodeLists = _query(_databaseContext);
 
         return Task.FromResult(originalCodeLists);
     }

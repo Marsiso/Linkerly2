@@ -18,43 +18,41 @@ namespace Linkerly.Web;
 public static class ConfigurationExtensions
 {
     public static IServiceCollection AddSqlite(this IServiceCollection services, IConfiguration configuration,
-                                               IWebHostEnvironment environment)
+        IWebHostEnvironment environment)
     {
         services.AddSingleton<IValidator<CloudContextOptions>, CloudContextOptionsValidator>();
 
         services.AddOptions<CloudContextOptions>()
-                .Bind(configuration.GetSection(CloudContextOptions.SectionName))
-                .ValidateFluently()
-                .ValidateOnStart();
+            .Bind(configuration.GetSection(CloudContextOptions.SectionName))
+            .ValidateFluently()
+            .ValidateOnStart();
 
-        CloudContextOptions? databaseContextOptions = configuration.GetSection(CloudContextOptions.SectionName).Get<CloudContextOptions>();
+        var databaseContextOptions = configuration.GetSection(CloudContextOptions.SectionName).Get<CloudContextOptions>();
 
         ArgumentNullException.ThrowIfNull(databaseContextOptions);
 
         services.AddHttpContextAccessor()
-                .AddScoped<HttpContextAccessor>();
+            .AddScoped<HttpContextAccessor>();
 
         services.AddScoped<ISaveChangesInterceptor, Auditor>();
 
         services.AddDbContext<CloudContext>(options =>
         {
-            string source = Path.Combine(databaseContextOptions.Location, databaseContextOptions.FileName);
+            var source = Path.Combine(databaseContextOptions.Location, databaseContextOptions.FileName);
 
-            string connectionStringBase = $"Data Source={source};";
+            var connectionStringBase = $"Data Source={source};";
 
-            string connectionString = new SqliteConnectionStringBuilder(connectionStringBase)
+            var connectionString = new SqliteConnectionStringBuilder(connectionStringBase)
             {
-                Mode = SqliteOpenMode.ReadWriteCreate,
+                Mode = SqliteOpenMode.ReadWriteCreate
             }.ToString();
 
             options.UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
-                   .UseSqlite(connectionString);
+                .UseSqlite(connectionString);
 
             if (environment.IsDevelopment())
-            {
                 options.EnableDetailedErrors()
-                       .EnableSensitiveDataLogging();
-            }
+                    .EnableSensitiveDataLogging();
         });
 
         return services;
@@ -63,20 +61,20 @@ public static class ConfigurationExtensions
     public static IServiceCollection AddCqrs(this IServiceCollection services)
     {
         services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(GetUserQuery).Assembly))
-                .AddValidatorsFromAssembly(typeof(FluentValidationPipelineBehaviour<,>).Assembly, ServiceLifetime.Singleton)
-                .AddTransient(typeof(IPipelineBehavior<,>), typeof(FluentValidationPipelineBehaviour<,>));
+            .AddValidatorsFromAssembly(typeof(FluentValidationPipelineBehaviour<,>).Assembly, ServiceLifetime.Singleton)
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(FluentValidationPipelineBehaviour<,>));
 
         return services;
     }
 
     public static WebApplication UseSqliteSeeder(this WebApplication application)
     {
-        IServiceProvider services = application.Services;
-        IWebHostEnvironment environment = application.Environment;
+        var services = application.Services;
+        var environment = application.Environment;
 
-        using IServiceScope serviceScope = services.CreateScope();
+        using var serviceScope = services.CreateScope();
 
-        CloudContext databaseContext = serviceScope.ServiceProvider.GetRequiredService<CloudContext>();
+        var databaseContext = serviceScope.ServiceProvider.GetRequiredService<CloudContext>();
 
         if (environment.IsDevelopment())
         {
@@ -93,11 +91,11 @@ public static class ConfigurationExtensions
 
     public static IServiceCollection AddGoogleCloudIdentity(this IServiceCollection services, IConfiguration configuration)
     {
-        IConfigurationSection configurationSection = configuration.GetSection(GoogleCloudIdentityOptions.SegmentName);
+        var configurationSection = configuration.GetSection(GoogleCloudIdentityOptions.SegmentName);
 
         ArgumentNullException.ThrowIfNull(configurationSection);
 
-        GoogleCloudIdentityOptions? identityProviderOptions = configurationSection.Get<GoogleCloudIdentityOptions>();
+        var identityProviderOptions = configurationSection.Get<GoogleCloudIdentityOptions>();
 
         ArgumentNullException.ThrowIfNull(identityProviderOptions);
 
@@ -137,12 +135,9 @@ public static class ConfigurationExtensions
 
     public static WebApplication UseSecurityHeaders(this WebApplication application)
     {
-        IWebHostEnvironment environment = application.Environment;
+        var environment = application.Environment;
 
-        if (!environment.IsDevelopment())
-        {
-            application.UseSecurityHeaders(SecurityHeaderHelpers.GetHeaderPolicyCollection());
-        }
+        if (!environment.IsDevelopment()) application.UseSecurityHeaders(SecurityHeaderHelpers.GetHeaderPolicyCollection());
 
         return application;
     }

@@ -16,45 +16,45 @@ public class FileEntityDatabaseMappingConfiguration : ChangeTrackingEntityDataba
         builder.HasKey(file => file.FileID);
 
         builder.HasIndex(file => file.FolderID)
-               .IsUnique(false);
+            .IsUnique(false);
 
         builder.HasIndex(file => file.ExtensionID)
-               .IsUnique(false);
+            .IsUnique(false);
 
         builder.Property(file => file.SafeName)
-               .IsRequired()
-               .IsUnicode()
-               .HasMaxLength(256);
+            .IsRequired()
+            .IsUnicode()
+            .HasMaxLength(256);
 
         builder.Property(file => file.UnsafeName)
-               .IsRequired()
-               .IsUnicode(false)
-               .HasMaxLength(256);
+            .IsRequired()
+            .IsUnicode(false)
+            .HasMaxLength(256);
 
         builder.Property(file => file.Location)
-               .IsRequired()
-               .IsUnicode(false)
-               .HasMaxLength(256);
+            .IsRequired()
+            .IsUnicode(false)
+            .HasMaxLength(256);
 
         builder.Property(file => file.Size)
-               .IsRequired();
+            .IsRequired();
 
         builder.HasOne(file => file.Folder)
-               .WithMany(folder => folder.Files)
-               .HasForeignKey(file => file.FolderID)
-               .IsRequired()
-               .OnDelete(DeleteBehavior.NoAction);
+            .WithMany(folder => folder.Files)
+            .HasForeignKey(file => file.FolderID)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.HasOne(file => file.Extension)
-               .WithMany()
-               .HasForeignKey(file => file.ExtensionID)
-               .IsRequired()
-               .OnDelete(DeleteBehavior.NoAction);
+            .WithMany()
+            .HasForeignKey(file => file.ExtensionID)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.HasOne(file => file.MimeType)
-               .WithMany()
-               .HasForeignKey(file => file.MimeTypeID)
-               .IsRequired()
-               .OnDelete(DeleteBehavior.NoAction);
+            .WithMany()
+            .HasForeignKey(file => file.MimeTypeID)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

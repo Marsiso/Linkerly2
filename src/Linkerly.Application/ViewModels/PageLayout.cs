@@ -20,11 +20,11 @@ public class PageLayout : LayoutComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
-        ClaimsPrincipal claimsPrincipal = authenticationState.User;
+        var claimsPrincipal = authenticationState.User;
 
-        GetUserByIdentifierQuery getUserQuery = new GetUserByIdentifierQuery(claimsPrincipal.FindFirstValue("id"));
+        var getUserQuery = new GetUserByIdentifierQuery(claimsPrincipal.FindFirstValue("id"));
 
         User = await _messageHandlerBroker.Send(getUserQuery);
     }

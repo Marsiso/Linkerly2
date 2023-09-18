@@ -15,9 +15,9 @@ public class LoginViewModel : PageModel
     {
         const string provider = "Google";
 
-        AuthenticationProperties authenticationProperties = new AuthenticationProperties
+        var authenticationProperties = new AuthenticationProperties
         {
-            RedirectUri = Url.Page("./Login", "Callback", new { returnUrl, }),
+            RedirectUri = Url.Page("./Login", "Callback", new { returnUrl })
         };
 
         return new ChallengeResult(provider, authenticationProperties);
@@ -26,22 +26,19 @@ public class LoginViewModel : PageModel
     [HttpGet]
     public async Task<IActionResult> OnGetCallbackAsync(string? returnUrl = default, string? remoteError = default)
     {
-        ClaimsIdentity? user = User.Identities.FirstOrDefault();
+        var user = User.Identities.FirstOrDefault();
 
-        bool authenticated = user?.IsAuthenticated ?? false;
+        var authenticated = user?.IsAuthenticated ?? false;
 
-        if (!authenticated)
-        {
-            return LocalRedirect(Routes.Index);
-        }
+        if (!authenticated) return LocalRedirect(Routes.Index);
 
-        AuthenticationProperties authProperties = new AuthenticationProperties
+        var authProperties = new AuthenticationProperties
         {
             IsPersistent = true,
-            RedirectUri = Request.Host.Value,
+            RedirectUri = Request.Host.Value
         };
 
-        ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(user!);
+        var claimsPrincipal = new ClaimsPrincipal(user!);
 
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal, authProperties);
 

@@ -35,12 +35,9 @@ public class DeleteUserCommandHandler : ICommandHandler<DeleteUserCommand, Unit>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        UserEntity? originalEntity = _databaseContext.Users.AsTracking().SingleOrDefault(user => user.UserID == request.UserID);
+        var originalEntity = _databaseContext.Users.AsTracking().SingleOrDefault(user => user.UserID == request.UserID);
 
-        if (originalEntity is null)
-        {
-            throw new EntityNotFoundException(request.UserID.ToString(), nameof(UserEntity));
-        }
+        if (originalEntity is null) throw new EntityNotFoundException(request.UserID.ToString(), nameof(UserEntity));
 
         originalEntity.IsActive = false;
 
