@@ -39,7 +39,7 @@ application.Run();
 
 namespace Linkerly.Web
 {
-    public partial class Program
+    public class Program
     {
     }
 }
