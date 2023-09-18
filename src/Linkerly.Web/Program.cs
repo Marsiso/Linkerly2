@@ -6,22 +6,22 @@ using MudBlazor.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 var services = builder.Services;
-IConfiguration configuration = builder.Configuration;
+var configuration = builder.Configuration;
 var environment = builder.Environment;
 
 services.AddRazorPages();
 services.AddServerSideBlazor();
 
-services.AddMudServices()
-    .AddSqlite(configuration, environment)
-    .AddAutoMapper(typeof(UserEntityMappingConfiguration), typeof(UserCommandMappingConfiguration))
-    .AddCqrs()
-    .AddGoogleCloudIdentity(configuration);
+services.AddMudServices();
+services.AddSqlite(configuration, environment);
+services.AddAutoMapper(typeof(UserEntityMappingConfiguration), typeof(UserCommandMappingConfiguration));
+services.AddCqrs();
+services.AddGoogleCloudIdentity(configuration);
 
 var application = builder.Build();
 
-application.UseSqliteSeeder()
-    .UseSecurityHeaders();
+application.UseSqliteSeeder();
+application.UseSecurityHeaders();
 
 application.UseHttpsRedirection();
 
@@ -39,7 +39,7 @@ application.Run();
 
 namespace Linkerly.Web
 {
-    public class Program
+    public partial class Program
     {
     }
 }

@@ -17,7 +17,11 @@ public class GetCodeListItemsQuery : IQuery<IEnumerable<CodeListItemEntity>>
 
 public class GetCodeListItemsQueryHandler : IQueryHandler<GetCodeListItemsQuery, IEnumerable<CodeListItemEntity>>
 {
-    private static readonly Func<CloudContext, int, IEnumerable<CodeListItemEntity>> _query = EF.CompileQuery((CloudContext databaseContext, int codeListID) => databaseContext.CodeListItems.AsTracking().Where(codeListItem => codeListItem.CodeListID == codeListID).AsEnumerable());
+    private static readonly Func<CloudContext, int, IEnumerable<CodeListItemEntity>> _query = EF.CompileQuery((CloudContext databaseContext, int codeListID) =>
+        databaseContext.CodeListItems
+            .AsNoTracking()
+            .Where(codeListItem => codeListItem.CodeListID == codeListID)
+            .AsEnumerable());
 
     private readonly CloudContext _databaseContext;
 

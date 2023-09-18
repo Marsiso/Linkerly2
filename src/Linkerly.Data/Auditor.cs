@@ -1,5 +1,6 @@
 ﻿using Linkerly.Domain.Application.Models.Common;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Linkerly.Data;
@@ -28,42 +29,34 @@ public class Auditor : SaveChangesInterceptor
     {
         databaseContext.ChangeTracker.DetectChanges();
 
-        var dateTime = DateTime.UtcNow;
-
-        foreach (var entityEntry in databaseContext.ChangeTracker.Entries<ChangeTrackingEntity>())
-            switch (entityEntry.State)
-            {
-                case EntityState.Added:
-                {
-                    entityEntry.Entity.IsActive = true;
-                    entityEntry.Entity.DateCreated = entityEntry.Entity.DateUpdated = dateTime;
-                    continue;
-                }
-                case EntityState.Modified:
-                {
-                    entityEntry.Entity.DateUpdated = dateTime;
-                    continue;
-                }
-                case EntityState.Deleted:
-                {
-                    throw new InvalidOperationException();
-                }
-                case EntityState.Detached:
-                {
-                    continue;
-                }
-                case EntityState.Unchanged:
-                {
-                    continue;
-                }
-                default:
-                {
-                    continue;
-                }
-            }
+        foreach (var entityEntry in databaseContext.ChangeTracker.Entries<ChangeTrackingEntity>()) UpdateAddedOrModifiedEntry(entityEntry);
     }
 
     private static void OnAfterSavedChanges(CloudContext databaseContext)
     {
+    }
+
+    private static EntityEntry<TEntity> UpdateAddedOrModifiedEntry<TEntity>(EntityEntry<TEntity> entityEntry) where TEntity : ChangeTrackingEntity
+    {
+        var entity = entityEntry.Entity;
+
+        switch (entityEntry.State)
+        {
+            case EntityState.Added:
+                entity.IsActive = true;
+                entity.DateCreated = entity.DateUpdated = DateTime.UtcNow;
+                return entityEntry;
+            case EntityState.Modified:
+                entity.DateUpdated = DateTime.UtcNow;
+                return entityEntry;
+            case EntityState.Deleted:
+                throw new InvalidOperationException();
+            case EntityState.Detached:
+                return entityEntry;
+            case EntityState.Unchanged:
+                return entityEntry;
+            default:
+                return entityEntry;
+        }
     }
 }

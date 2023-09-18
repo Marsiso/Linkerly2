@@ -7,7 +7,7 @@ namespace Linkerly.Application.ViewModels.Authentication;
 
 public class LogoutViewModel : PageModel
 {
-    public string? ReturnURL { get; }
+    public string? ReturnUrl { get; }
 
     public async Task<IActionResult> OnGetAsync(string? returnUrl = default)
     {

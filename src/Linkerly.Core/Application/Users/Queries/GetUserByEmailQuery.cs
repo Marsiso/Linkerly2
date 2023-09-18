@@ -17,7 +17,9 @@ public class GetUserByEmailQuery : IQuery<UserEntity?>
 
 public class GetUserByEmailQueryHandler : IQueryHandler<GetUserByEmailQuery, UserEntity?>
 {
-    private static readonly Func<CloudContext, string, UserEntity?> _query = EF.CompileQuery((CloudContext databaseContext, string email) => databaseContext.Users.AsTracking().SingleOrDefault(user => user.Email == email));
+    private static readonly Func<CloudContext, string, UserEntity?> _query = EF.CompileQuery((CloudContext databaseContext, string email) => databaseContext.Users
+        .AsNoTracking()
+        .SingleOrDefault(user => user.Email == email));
 
     private readonly CloudContext _databaseContext;
 

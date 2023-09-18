@@ -19,7 +19,10 @@ public class GetCodeListItemQueryHandler : IQueryHandler<GetCodeListItemQuery, C
 {
     private readonly CloudContext _databaseContext;
 
-    private readonly Func<CloudContext, int, CodeListItemEntity?> _query = EF.CompileQuery((CloudContext databaseContext, int codeListItemID) => databaseContext.CodeListItems.AsTracking().SingleOrDefault(codeListItem => codeListItem.CodeListItemID == codeListItemID));
+    private readonly Func<CloudContext, int, CodeListItemEntity?> _query = EF.CompileQuery((CloudContext databaseContext, int codeListItemID) =>
+        databaseContext.CodeListItems
+            .AsNoTracking()
+            .SingleOrDefault(codeListItem => codeListItem.CodeListItemID == codeListItemID));
 
     public GetCodeListItemQueryHandler(CloudContext databaseContext)
     {

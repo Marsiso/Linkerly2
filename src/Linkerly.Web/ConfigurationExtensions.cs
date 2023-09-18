@@ -17,8 +17,7 @@ namespace Linkerly.Web;
 
 public static class ConfigurationExtensions
 {
-    public static IServiceCollection AddSqlite(this IServiceCollection services, IConfiguration configuration,
-        IWebHostEnvironment environment)
+    public static IServiceCollection AddSqlite(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
     {
         services.AddSingleton<IValidator<CloudContextOptions>, CloudContextOptionsValidator>();
 
@@ -31,8 +30,8 @@ public static class ConfigurationExtensions
 
         ArgumentNullException.ThrowIfNull(databaseContextOptions);
 
-        services.AddHttpContextAccessor()
-            .AddScoped<HttpContextAccessor>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<HttpContextAccessor>();
 
         services.AddScoped<ISaveChangesInterceptor, Auditor>();
 
@@ -47,12 +46,14 @@ public static class ConfigurationExtensions
                 Mode = SqliteOpenMode.ReadWriteCreate
             }.ToString();
 
-            options.UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
-                .UseSqlite(connectionString);
+            options.UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll);
+            options.UseSqlite(connectionString);
 
             if (environment.IsDevelopment())
-                options.EnableDetailedErrors()
-                    .EnableSensitiveDataLogging();
+            {
+                options.EnableDetailedErrors();
+                options.EnableSensitiveDataLogging();
+            }
         });
 
         return services;
@@ -60,9 +61,9 @@ public static class ConfigurationExtensions
 
     public static IServiceCollection AddCqrs(this IServiceCollection services)
     {
-        services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(GetUserQuery).Assembly))
-            .AddValidatorsFromAssembly(typeof(FluentValidationPipelineBehaviour<,>).Assembly, ServiceLifetime.Singleton)
-            .AddTransient(typeof(IPipelineBehavior<,>), typeof(FluentValidationPipelineBehaviour<,>));
+        services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(GetUserQuery).Assembly));
+        services.AddValidatorsFromAssembly(typeof(FluentValidationPipelineBehaviour<,>).Assembly, ServiceLifetime.Singleton);
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(FluentValidationPipelineBehaviour<,>));
 
         return services;
     }
@@ -101,18 +102,15 @@ public static class ConfigurationExtensions
 
         services.AddSingleton<IValidator<GoogleCloudIdentityOptions>, GoogleCloudIdentityOptionsValidator>();
 
-        services
-            .AddOptions<GoogleCloudIdentityOptions>()
+        services.AddOptions<GoogleCloudIdentityOptions>()
             .Bind(configurationSection)
             .ValidateFluently()
             .ValidateOnStart();
 
-        services
-            .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie();
 
-        services
-            .AddAuthentication()
+        services.AddAuthentication()
             .AddGoogle(options =>
             {
                 options.ClientId = identityProviderOptions.ClientID;

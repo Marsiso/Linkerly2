@@ -17,7 +17,10 @@ public class GetFileQuery : IQuery<FileEntity?>
 
 public class GetFileQueryHandler : IQueryHandler<GetFileQuery, FileEntity?>
 {
-    private static readonly Func<CloudContext, int, FileEntity?> _query = EF.CompileQuery((CloudContext databaseContext, int fileID) => databaseContext.Files.AsTracking().SingleOrDefault(file => file.FileID == fileID));
+    private static readonly Func<CloudContext, int, FileEntity?> _query = EF.CompileQuery((CloudContext databaseContext, int fileID) =>
+        databaseContext.Files
+            .AsNoTracking()
+            .SingleOrDefault(file => file.FileID == fileID));
 
     private readonly CloudContext _databaseContext;
 

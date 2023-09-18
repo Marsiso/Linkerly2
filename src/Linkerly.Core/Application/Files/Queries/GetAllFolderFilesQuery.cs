@@ -17,7 +17,11 @@ public class GetAllFolderFilesQuery : IQuery<IEnumerable<FileEntity>>
 
 public class GetAllFolderFilesQueryHandler : IQueryHandler<GetAllFolderFilesQuery, IEnumerable<FileEntity>>
 {
-    private static readonly Func<CloudContext, int, IEnumerable<FileEntity>> _query = EF.CompileQuery((CloudContext databaseContext, int folderID) => databaseContext.Files.AsTracking().Where(file => file.FolderID == folderID).AsEnumerable());
+    private static readonly Func<CloudContext, int, IEnumerable<FileEntity>> _query = EF.CompileQuery((CloudContext databaseContext, int folderID) =>
+        databaseContext.Files
+            .AsNoTracking()
+            .Where(file => file.FolderID == folderID)
+            .AsEnumerable());
 
     private readonly CloudContext _databaseContext;
 

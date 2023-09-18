@@ -17,7 +17,10 @@ public class GetFolderQuery : IQuery<FolderEntity>
 
 public class GetFolderQueryHandler : IQueryHandler<GetFolderQuery, FolderEntity?>
 {
-    private static readonly Func<CloudContext, int, FolderEntity?> _query = EF.CompileQuery((CloudContext databaseContext, int folderID) => databaseContext.Folders.AsTracking().SingleOrDefault(folder => folder.FolderID == folderID));
+    private static readonly Func<CloudContext, int, FolderEntity?> _query = EF.CompileQuery((CloudContext databaseContext, int folderID) =>
+        databaseContext.Folders
+            .AsTracking()
+            .SingleOrDefault(folder => folder.FolderID == folderID));
 
     private readonly CloudContext _databaseContext;
 

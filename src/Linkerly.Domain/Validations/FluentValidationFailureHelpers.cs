@@ -10,7 +10,8 @@ public static class FluentValidationFailureHelpers
 
         List<ValidationFailure>? validationFailures = validationResult.Errors;
 
-        var validationFailuresByProperties = validationFailures.GroupBy(validationFailure => validationFailure.PropertyName,
+        var validationFailuresByProperties = validationFailures
+            .GroupBy(validationFailure => validationFailure.PropertyName,
                 validationFailure => validationFailure.ErrorMessage,
                 (propertyName, validationFailuresByProperty) => new
                 {
@@ -24,12 +25,12 @@ public static class FluentValidationFailureHelpers
         return validationFailuresByProperties;
     }
 
-    public static Dictionary<string, string[]> DistinctErrorsByProperty(
-        this IEnumerable<ValidationResult>? validationResults)
+    public static Dictionary<string, string[]> DistinctErrorsByProperty(this IEnumerable<ValidationResult>? validationResults)
     {
         if (validationResults is null) return new Dictionary<string, string[]>();
 
-        var validationFailuresByProperties = validationResults.Where(validationResult => validationResult is { IsValid: false, Errors: not null, Errors.Count: > 0 })
+        var validationFailuresByProperties = validationResults
+            .Where(validationResult => validationResult is { IsValid: false, Errors: not null, Errors.Count: > 0 })
             .SelectMany(validationResult => validationResult.Errors, (_, vf) => vf)
             .GroupBy(
                 validationFailure => validationFailure.PropertyName,

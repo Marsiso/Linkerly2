@@ -32,8 +32,9 @@ public class DeleteFileCommandHandler : ICommandHandler<DeleteFileCommand, Unit>
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        var originalFile =
-            _databaseContext.Files.AsTracking().SingleOrDefault(file => file.FileID == request.FileID);
+        var originalFile = _databaseContext.Files
+            .AsTracking()
+            .SingleOrDefault(file => file.FileID == request.FileID);
 
         if (originalFile is null) throw new EntityNotFoundException(request.FileID.ToString(), nameof(FileEntity));
 

@@ -26,9 +26,9 @@ public class LoginViewModel : PageModel
     [HttpGet]
     public async Task<IActionResult> OnGetCallbackAsync(string? returnUrl = default, string? remoteError = default)
     {
-        var user = User.Identities.FirstOrDefault();
+        var claimsIdentity = User.Identities.FirstOrDefault();
 
-        var authenticated = user?.IsAuthenticated ?? false;
+        var authenticated = claimsIdentity?.IsAuthenticated ?? false;
 
         if (!authenticated) return LocalRedirect(Routes.Index);
 
@@ -38,7 +38,7 @@ public class LoginViewModel : PageModel
             RedirectUri = Request.Host.Value
         };
 
-        var claimsPrincipal = new ClaimsPrincipal(user!);
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity!);
 
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal, authProperties);
 

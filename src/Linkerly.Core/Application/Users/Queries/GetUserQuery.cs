@@ -17,7 +17,10 @@ public class GetUserQuery : IQuery<UserEntity?>
 
 public class GetUserQueryHandler : IQueryHandler<GetUserQuery, UserEntity?>
 {
-    private static readonly Func<CloudContext, int, UserEntity?> _query = EF.CompileQuery((CloudContext databaseContext, int userID) => databaseContext.Users.AsTracking().SingleOrDefault(user => user.UserID == userID));
+    private static readonly Func<CloudContext, int, UserEntity?> _query = EF.CompileQuery((CloudContext databaseContext, int userID) =>
+        databaseContext.Users
+            .AsNoTracking()
+            .SingleOrDefault(user => user.UserID == userID));
 
     private readonly CloudContext _databaseContext;
 
