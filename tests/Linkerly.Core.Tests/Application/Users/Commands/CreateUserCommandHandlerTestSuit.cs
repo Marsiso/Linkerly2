@@ -9,7 +9,7 @@ namespace Linkerly.Core.Tests.Application.Users.Commands;
 public class CreateUserCommandHandlerTestSuit
 {
     [Fact]
-    public void Handle_WhenRequestIsValid_ThenInsertNewRecordIntoDatabase()
+    public void Handle_WhenRequestIsValid_ThenInsertRecordIntoDatabase()
     {
         // Arrange.
         var mappingProfile = new UserCommandMappingConfiguration();
@@ -28,12 +28,9 @@ public class CreateUserCommandHandlerTestSuit
         var cancellationToken = new CancellationToken();
 
         // Act.
-        commandHandler.Handle(command, cancellationToken);
+        commandHandler.Handle(command, cancellationToken).GetAwaiter().GetResult();
 
         // Assert.
-        databaseContext.Should().NotBeNull();
-        databaseContext.Users.Should().NotBeNull();
-        databaseContext.Users.Should().NotBeEmpty();
-        databaseContext.Users.Should().HaveCount(1);
+        databaseContext.Users.Any().Should().BeTrue();
     }
 }

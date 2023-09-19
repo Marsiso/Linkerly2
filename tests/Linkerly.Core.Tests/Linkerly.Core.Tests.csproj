@@ -28,8 +28,5 @@
         <ProjectReference Include="..\..\src\Linkerly.Core\Linkerly.Core.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Application\Users\Queries\"/>
-    </ItemGroup>
 
 </Project>

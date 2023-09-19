@@ -12,6 +12,10 @@ public class CloudContextTestWrapper : IDisposable
     {
         var optionsBuilder = new DbContextOptionsBuilder<CloudContext>();
 
+        optionsBuilder.EnableDetailedErrors();
+        optionsBuilder.EnableSensitiveDataLogging();
+        optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll);
+
         var connectionString = new SqliteConnectionStringBuilder
         {
             DataSource = ":memory:",
@@ -37,9 +41,9 @@ public class CloudContextTestWrapper : IDisposable
     {
         if (_disposed) return;
 
-        Connection.Dispose();
         Context.Dispose();
-        
+        Connection.Dispose();
+
         GC.SuppressFinalize(this);
 
         _disposed = true;
