@@ -2,9 +2,7 @@
 using FluentAssertions;
 using Linkerly.Core.Application.Users.Commands;
 using Linkerly.Core.Application.Users.Mappings;
-using Linkerly.Data;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
+using Linkerly.Core.Tests.Helpers;
 
 namespace Linkerly.Core.Tests.Application.Users.Commands;
 
@@ -18,27 +16,11 @@ public class CreateUserCommandHandlerTestSuit
         var mapperConfiguration = new MapperConfiguration(configuration => configuration.AddProfile(mappingProfile));
         var mapper = new Mapper(mapperConfiguration);
 
-        var databaseOptionsBuilder = new DbContextOptionsBuilder<CloudContext>();
+        using var databaseContextWrapper = new CloudContextTestWrapper();
 
-        var connectionString = new SqliteConnectionStringBuilder
-        {
-            DataSource = ":memory:",
-            Mode = SqliteOpenMode.ReadWriteCreate
-        }.ToString();
+        databaseContextWrapper.Migrate();
 
-        using var connection = new SqliteConnection(connectionString);
-
-        connection.Open();
-
-        databaseOptionsBuilder.UseSqlite(connection);
-
-        var auditor = new Auditor();
-        var databaseOptions = databaseOptionsBuilder.Options;
-
-        using var databaseContext = new CloudContext(databaseOptions, auditor);
-
-        databaseContext.Database.EnsureDeleted();
-        databaseContext.Database.EnsureCreated();
+        var databaseContext = databaseContextWrapper.Context;
 
         var commandHandler = new CreateUserCommandHandler(databaseContext, mapper);
 

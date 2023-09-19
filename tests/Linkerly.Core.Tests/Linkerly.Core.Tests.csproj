@@ -30,7 +30,6 @@
 
     <ItemGroup>
         <Folder Include="Application\Users\Queries\"/>
-        <Folder Include="Helpers\"/>
     </ItemGroup>
 
 </Project>
