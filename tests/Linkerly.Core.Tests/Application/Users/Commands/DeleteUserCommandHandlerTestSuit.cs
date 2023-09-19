@@ -58,26 +58,33 @@ public class DeleteUserCommandHandlerTestSuit
 
         var databaseContext = databaseContextWrapper.Context;
 
+        var userSample = new UserEntity
+        {
+            UserID = 1,
+            Identifier = "123456789",
+            Email = "givenname.familyname@example.com",
+            HasEmailConfirmed = true,
+            Name = "givenname \"nickanme\" familyname",
+            GivenName = "givenname",
+            FamilyName = "familyname",
+            Picture = default,
+            Locale = "cs"
+        };
+
         var commandHandler = new DeleteUserCommandHandler(databaseContext);
 
         var command = new DeleteUserCommand(1);
         var cancellationToken = new CancellationToken();
 
-        EntityNotFoundException? exception = default;
-
         // Act.
-        try
-        {
-            commandHandler.Handle(command, cancellationToken).GetAwaiter().GetResult();
-        }
-        catch (EntityNotFoundException caughtException)
-        {
-            exception = caughtException;
-        }
+        Action action = () => commandHandler.Handle(command, cancellationToken).GetAwaiter().GetResult();
 
+        var exception = Record.Exception(action);
         // Assert.
         exception.Should().NotBeNull();
-        exception?.EntityID.Should().Be("1");
-        exception?.EntityTypeName.Should().BeEquivalentTo(nameof(UserEntity));
+        exception.Should().BeOfType<EntityNotFoundException>();
+
+        (exception as EntityNotFoundException)?.EntityID.Should().BeEquivalentTo(userSample.UserID.ToString());
+        (exception as EntityNotFoundException)?.EntityTypeName.Should().BeEquivalentTo(nameof(UserEntity));
     }
 }

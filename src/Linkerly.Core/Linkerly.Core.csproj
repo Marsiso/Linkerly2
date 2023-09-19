@@ -10,5 +10,4 @@
         <ProjectReference Include="..\Linkerly.Data\Linkerly.Data.csproj"/>
     </ItemGroup>
 
-
 </Project>

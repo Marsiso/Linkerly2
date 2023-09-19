@@ -7,11 +7,9 @@
         <UserSecretsId>a792296e-c5da-4d30-a989-9bcf1f6602c6</UserSecretsId>
     </PropertyGroup>
 
-
     <ItemGroup>
         <Folder Include="Shared\"/>
     </ItemGroup>
-
 
     <ItemGroup>
         <ProjectReference Include="..\Linkerly.Application\Linkerly.Application.csproj"/>

@@ -26,6 +26,7 @@ public class UpdateUserCommandHandlerTestSuit
 
         var userSample = new UserEntity
         {
+            UserID = 0,
             Identifier = "123456789",
             Email = "givenname.familyname@example.com",
             HasEmailConfirmed = true,
@@ -39,9 +40,10 @@ public class UpdateUserCommandHandlerTestSuit
         _ = databaseContext.Users.Add(userSample);
         _ = databaseContext.SaveChanges();
 
-        var commandHandler = new UpdateUserCommandHandler(databaseContext, mapper);
+        userSample.Name = $"{userSample.Name}.{userSample.Name}";
 
-        var command = new UpdateUserCommand(userSample.UserID, "123456789", "other.givenname.familyname@example.com", true, "givenname \"nickanme\" familyname", "givenname", "familyname", default, "cs");
+        var commandHandler = new UpdateUserCommandHandler(databaseContext, mapper);
+        var command = mapper.Map<UpdateUserCommand>(userSample);
         var cancellationToken = new CancellationToken();
 
         // Act.
@@ -72,21 +74,16 @@ public class UpdateUserCommandHandlerTestSuit
         var command = new UpdateUserCommand(1, "123456789", "other.givenname.familyname@example.com", true, "givenname \"nickanme\" familyname", "givenname", "familyname", default, "cs");
         var cancellationToken = new CancellationToken();
 
-        EntityNotFoundException? exception = default;
-
         // Act.
-        try
-        {
-            commandHandler.Handle(command, cancellationToken).GetAwaiter().GetResult();
-        }
-        catch (EntityNotFoundException caughtException)
-        {
-            exception = caughtException;
-        }
+        Action action = () => commandHandler.Handle(command, cancellationToken).GetAwaiter().GetResult();
+
+        var exception = Record.Exception(action);
 
         // Assert.
         exception.Should().NotBeNull();
-        exception?.EntityID.Should().Be("1");
-        exception?.EntityTypeName.Should().BeEquivalentTo(nameof(UserEntity));
+        exception.Should().BeOfType<EntityNotFoundException>();
+
+        (exception as EntityNotFoundException)?.EntityID.Should().BeEquivalentTo("1");
+        (exception as EntityNotFoundException)?.EntityTypeName.Should().BeEquivalentTo(nameof(UserEntity));
     }
 }
