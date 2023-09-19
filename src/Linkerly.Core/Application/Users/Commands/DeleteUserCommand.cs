@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Linkerly.Data;
+﻿using Linkerly.Data;
 using Linkerly.Domain.Application.Models;
 using Linkerly.Domain.Commands;
 using Linkerly.Domain.Exceptions;
@@ -21,12 +20,10 @@ public class DeleteUserCommand : ICommand<Unit>
 public class DeleteUserCommandHandler : ICommandHandler<DeleteUserCommand, Unit>
 {
     private readonly CloudContext _databaseContext;
-    private readonly IMapper _mapper;
 
-    public DeleteUserCommandHandler(CloudContext databaseContext, IMapper mapper)
+    public DeleteUserCommandHandler(CloudContext databaseContext)
     {
         _databaseContext = databaseContext;
-        _mapper = mapper;
     }
 
     public Task<Unit> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
@@ -42,6 +39,8 @@ public class DeleteUserCommandHandler : ICommandHandler<DeleteUserCommand, Unit>
         if (originalEntity is null) throw new EntityNotFoundException(request.UserID.ToString(), nameof(UserEntity));
 
         originalEntity.IsActive = false;
+
+        _ = _databaseContext.Users.Update(originalEntity);
 
         _ = _databaseContext.SaveChanges();
 

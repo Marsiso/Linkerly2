@@ -59,6 +59,8 @@ public class UpdateUserCommandHandler : ICommandHandler<UpdateUserCommand, Unit>
 
         _ = _mapper.Map(request, originalUser);
 
+        _ = _databaseContext.Users.Update(originalUser);
+
         _ = _databaseContext.SaveChanges();
 
         return Unit.Task;
