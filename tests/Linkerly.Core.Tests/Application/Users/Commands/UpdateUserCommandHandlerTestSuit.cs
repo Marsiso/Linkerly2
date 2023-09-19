@@ -69,9 +69,21 @@ public class UpdateUserCommandHandlerTestSuit
 
         var databaseContext = databaseContextWrapper.Context;
 
-        var commandHandler = new UpdateUserCommandHandler(databaseContext, mapper);
+        var userSample = new UserEntity
+        {
+            UserID = 1,
+            Identifier = "123456789",
+            Email = "givenname.familyname@example.com",
+            HasEmailConfirmed = true,
+            Name = "givenname \"nickanme\" familyname",
+            GivenName = "givenname",
+            FamilyName = "familyname",
+            Picture = default,
+            Locale = "cs"
+        };
 
-        var command = new UpdateUserCommand(1, "123456789", "other.givenname.familyname@example.com", true, "givenname \"nickanme\" familyname", "givenname", "familyname", default, "cs");
+        var commandHandler = new UpdateUserCommandHandler(databaseContext, mapper);
+        var command = mapper.Map<UpdateUserCommand>(userSample);
         var cancellationToken = new CancellationToken();
 
         // Act.

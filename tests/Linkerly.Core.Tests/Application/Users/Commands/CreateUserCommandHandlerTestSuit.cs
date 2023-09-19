@@ -3,6 +3,7 @@ using FluentAssertions;
 using Linkerly.Core.Application.Users.Commands;
 using Linkerly.Core.Application.Users.Mappings;
 using Linkerly.Core.Tests.Helpers;
+using Linkerly.Domain.Application.Models;
 
 namespace Linkerly.Core.Tests.Application.Users.Commands;
 
@@ -22,9 +23,21 @@ public class CreateUserCommandHandlerTestSuit
 
         var databaseContext = databaseContextWrapper.Context;
 
-        var commandHandler = new CreateUserCommandHandler(databaseContext, mapper);
+        var userSample = new UserEntity
+        {
+            UserID = 0,
+            Identifier = "123456789",
+            Email = "givenname.familyname@example.com",
+            HasEmailConfirmed = true,
+            Name = "givenname \"nickanme\" familyname",
+            GivenName = "givenname",
+            FamilyName = "familyname",
+            Picture = default,
+            Locale = "cs"
+        };
 
-        var command = new CreateUserCommand("123456789", "givenname.familyname@example.com", true, "givenname \"nickanme\" familyname", "givenname", "familyname", default, "cs");
+        var commandHandler = new CreateUserCommandHandler(databaseContext, mapper);
+        var command = mapper.Map<CreateUserCommand>(userSample);
         var cancellationToken = new CancellationToken();
 
         // Act.

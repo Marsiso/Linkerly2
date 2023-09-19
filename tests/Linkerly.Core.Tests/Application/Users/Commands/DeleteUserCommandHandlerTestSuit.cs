@@ -1,5 +1,7 @@
-﻿using FluentAssertions;
+﻿using AutoMapper;
+using FluentAssertions;
 using Linkerly.Core.Application.Users.Commands;
+using Linkerly.Core.Application.Users.Mappings;
 using Linkerly.Core.Tests.Helpers;
 using Linkerly.Domain.Application.Models;
 using Linkerly.Domain.Exceptions;
@@ -13,6 +15,10 @@ public class DeleteUserCommandHandlerTestSuit
     public void Handle_WhenRequestIsValid_ThenRemoveRecordFromDatabase()
     {
         // Arrange.
+        var mappingProfile = new UserCommandMappingConfiguration();
+        var mapperConfiguration = new MapperConfiguration(configuration => configuration.AddProfile(mappingProfile));
+        var mapper = new Mapper(mapperConfiguration);
+
         using var databaseContextWrapper = new CloudContextTestWrapper();
 
         databaseContextWrapper.Migrate();
@@ -21,6 +27,7 @@ public class DeleteUserCommandHandlerTestSuit
 
         var userSample = new UserEntity
         {
+            UserID = 0,
             Identifier = "123456789",
             Email = "givenname.familyname@example.com",
             HasEmailConfirmed = true,
@@ -35,8 +42,7 @@ public class DeleteUserCommandHandlerTestSuit
         _ = databaseContext.SaveChanges();
 
         var commandHandler = new DeleteUserCommandHandler(databaseContext);
-
-        var command = new DeleteUserCommand(userSample.UserID);
+        var command = mapper.Map<DeleteUserCommand>(userSample);
         var cancellationToken = new CancellationToken();
 
         // Act.
@@ -52,6 +58,10 @@ public class DeleteUserCommandHandlerTestSuit
     public void Handle_WhenEntityNotFound_ThenThrowEntityNotFoundException()
     {
         // Arrange.
+        var mappingProfile = new UserCommandMappingConfiguration();
+        var mapperConfiguration = new MapperConfiguration(configuration => configuration.AddProfile(mappingProfile));
+        var mapper = new Mapper(mapperConfiguration);
+
         using var databaseContextWrapper = new CloudContextTestWrapper();
 
         databaseContextWrapper.Migrate();
@@ -72,14 +82,14 @@ public class DeleteUserCommandHandlerTestSuit
         };
 
         var commandHandler = new DeleteUserCommandHandler(databaseContext);
-
-        var command = new DeleteUserCommand(1);
+        var command = mapper.Map<DeleteUserCommand>(userSample);
         var cancellationToken = new CancellationToken();
 
         // Act.
         Action action = () => commandHandler.Handle(command, cancellationToken).GetAwaiter().GetResult();
 
         var exception = Record.Exception(action);
+
         // Assert.
         exception.Should().NotBeNull();
         exception.Should().BeOfType<EntityNotFoundException>();

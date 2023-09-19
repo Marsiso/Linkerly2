@@ -5,13 +5,14 @@ using Linkerly.Core.Application.Folders.Mappings;
 using Linkerly.Core.Tests.Helpers;
 using Linkerly.Domain.Application.Models;
 using Linkerly.Domain.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Linkerly.Core.Tests.Application.Folders.Commands;
 
-public class UpdateFolderCommandTestSuit
+public class DeleteFolderCommandHandlerTestSuit
 {
     [Fact]
-    public void Handle_WhenRequestIsValid_ThenUpdateRecordInDatabase()
+    public void Handle_WhenRequestIsValid_ThenRemoveRecordFromDatabase()
     {
         // Arrange.
         var mappingProfile = new FolderCommandMappingConfiguration();
@@ -70,19 +71,17 @@ public class UpdateFolderCommandTestSuit
         _ = databaseContext.Folders.Add(folderSample);
         _ = databaseContext.SaveChanges();
 
-        folderSample.Name = $"{folderSample.Name}.{folderSample.Name}";
-
-        var commandHandler = new UpdateFolderCommandHandler(databaseContext, mapper);
-        var command = mapper.Map<UpdateFolderCommand>(folderSample);
+        var commandHandler = new DeleteFolderCommandHandler(databaseContext);
+        var command = mapper.Map<DeleteFolderCommand>(folderSample);
         var cancellationToken = new CancellationToken();
 
         // Act.
         commandHandler.Handle(command, cancellationToken).GetAwaiter().GetResult();
 
-
         // Assert.
-        databaseContext.Folders.Any(folder => folder.FolderID == command.FolderID).Should().BeTrue();
-        databaseContext.Folders.SingleOrDefault(folder => folder.FolderID == command.FolderID)?.Name.Should().BeEquivalentTo(folderSample.Name);
+        databaseContext.Folders.AsNoTracking().Any(folder => folder.FolderID == command.FolderID).Should().BeFalse();
+        databaseContext.Folders.AsNoTracking().IgnoreQueryFilters().Any(folder => folder.FolderID == command.FolderID).Should().BeTrue();
+        databaseContext.Folders.AsNoTracking().IgnoreQueryFilters().SingleOrDefault(folder => folder.FolderID == command.FolderID)?.IsActive.Should().BeFalse();
     }
 
     [Fact]
@@ -142,8 +141,8 @@ public class UpdateFolderCommandTestSuit
             TotalCount = 10
         };
 
-        var commandHandler = new UpdateFolderCommandHandler(databaseContext, mapper);
-        var command = mapper.Map<UpdateFolderCommand>(folderSample);
+        var commandHandler = new DeleteFolderCommandHandler(databaseContext);
+        var command = mapper.Map<DeleteFolderCommand>(folderSample);
         var cancellationToken = new CancellationToken();
 
         // Act.
