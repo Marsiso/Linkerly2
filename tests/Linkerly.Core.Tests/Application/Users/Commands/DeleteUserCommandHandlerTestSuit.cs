@@ -10,7 +10,7 @@ namespace Linkerly.Core.Tests.Application.Users.Commands;
 public class DeleteUserCommandHandlerTestSuit
 {
     [Fact]
-    public void Handle_WhenRequestIsValid_ThenDeleteRecordInDatabase()
+    public void Handle_WhenRequestIsValid_ThenRemoveRecordFromDatabase()
     {
         // Arrange.
         using var databaseContextWrapper = new CloudContextTestWrapper();

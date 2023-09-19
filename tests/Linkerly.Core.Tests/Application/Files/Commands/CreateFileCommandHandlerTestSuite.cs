@@ -1,19 +1,19 @@
 ﻿using AutoMapper;
 using FluentAssertions;
-using Linkerly.Core.Application.Folders.Commands;
-using Linkerly.Core.Application.Folders.Mappings;
+using Linkerly.Core.Application.Files.Commands;
+using Linkerly.Core.Application.Files.Mappings;
 using Linkerly.Core.Tests.Helpers;
 using Linkerly.Domain.Application.Models;
 
-namespace Linkerly.Core.Tests.Application.Folders.Commands;
+namespace Linkerly.Core.Tests.Application.Files.Commands;
 
-public class CreateFolderCommandHandlerTestSuit
+public class CreateFileCommandHandlerTestSuite
 {
     [Fact]
     public void Handle_WhenRequestIsValid_ThenInsertRecordIntoDatabase()
     {
         // Arrange.
-        var mappingProfile = new FolderCommandMappingConfiguration();
+        var mappingProfile = new FileCommandMappingConfiguration();
         var mapperConfiguration = new MapperConfiguration(configuration => configuration.AddProfile(mappingProfile));
         var mapper = new Mapper(mapperConfiguration);
 
@@ -66,14 +66,29 @@ public class CreateFolderCommandHandlerTestSuit
             TotalCount = 10
         };
 
-        var commandHandler = new CreateFolderCommandHandler(databaseContext, mapper);
-        var command = mapper.Map<CreateFolderCommand>(folderSample);
+        _ = databaseContext.Folders.Add(folderSample);
+        _ = databaseContext.SaveChanges();
+
+        var fileSample = new FileEntity
+        {
+            FileID = 0,
+            FolderID = folderSample.FolderID,
+            ExtensionID = codeListItemSample.CodeListItemID,
+            MimeTypeID = codeListItemSample.CodeListItemID,
+            SafeName = "safename.pdf",
+            UnsafeName = "unsafename.pdf",
+            Location = Path.Combine(".\\", "Tests", "Temp"),
+            Size = 1_000
+        };
+
+        var commandHandler = new CreateFileCommandHandler(databaseContext, mapper);
+        var command = mapper.Map<CreateFileCommand>(fileSample);
         var cancellationToken = new CancellationToken();
 
         // Act.
         commandHandler.Handle(command, cancellationToken).GetAwaiter().GetResult();
 
         // Assert.
-        databaseContext.Folders.Any().Should().BeTrue();
+        databaseContext.Files.Any().Should().BeTrue();
     }
 }

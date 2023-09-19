@@ -1,20 +1,20 @@
 ﻿using AutoMapper;
 using FluentAssertions;
-using Linkerly.Core.Application.Folders.Commands;
-using Linkerly.Core.Application.Folders.Mappings;
+using Linkerly.Core.Application.Files.Commands;
+using Linkerly.Core.Application.Files.Mappings;
 using Linkerly.Core.Tests.Helpers;
 using Linkerly.Domain.Application.Models;
 using Linkerly.Domain.Exceptions;
 
-namespace Linkerly.Core.Tests.Application.Folders.Commands;
+namespace Linkerly.Core.Tests.Application.Files.Commands;
 
-public class UpdateFolderCommandTestSuit
+public class UpdateFileCommandHandlerTestSuit
 {
     [Fact]
-    public void Handle_WhenRequestIsValid_ThenUpdateRecordInDatabase()
+    public void Handle_WhenRequestIsValid_ThenInsertRecordIntoDatabase()
     {
         // Arrange.
-        var mappingProfile = new FolderCommandMappingConfiguration();
+        var mappingProfile = new FileCommandMappingConfiguration();
         var mapperConfiguration = new MapperConfiguration(configuration => configuration.AddProfile(mappingProfile));
         var mapper = new Mapper(mapperConfiguration);
 
@@ -70,26 +70,40 @@ public class UpdateFolderCommandTestSuit
         _ = databaseContext.Folders.Add(folderSample);
         _ = databaseContext.SaveChanges();
 
-        folderSample.Name = $"{folderSample.Name}.{folderSample.Name}";
+        var fileSample = new FileEntity
+        {
+            FileID = 0,
+            FolderID = folderSample.FolderID,
+            ExtensionID = codeListItemSample.CodeListItemID,
+            MimeTypeID = codeListItemSample.CodeListItemID,
+            SafeName = "safename.pdf",
+            UnsafeName = "unsafename.pdf",
+            Location = Path.Combine(".\\", "Tests", "Temp"),
+            Size = 1_000
+        };
 
-        var commandHandler = new UpdateFolderCommandHandler(databaseContext, mapper);
-        var command = mapper.Map<UpdateFolderCommand>(folderSample);
+        _ = databaseContext.Files.Add(fileSample);
+        _ = databaseContext.SaveChanges();
+
+        fileSample.UnsafeName = $"{fileSample.UnsafeName}.{fileSample.UnsafeName}";
+
+        var commandHandler = new UpdateFileCommandHandler(databaseContext, mapper);
+        var command = mapper.Map<UpdateFileCommand>(fileSample);
         var cancellationToken = new CancellationToken();
 
         // Act.
         commandHandler.Handle(command, cancellationToken).GetAwaiter().GetResult();
 
-
         // Assert.
-        databaseContext.Folders.Any(folder => folder.FolderID == command.FolderID).Should().BeTrue();
-        databaseContext.Folders.SingleOrDefault(folder => folder.FolderID == command.FolderID)?.Name.Should().BeEquivalentTo(folderSample.Name);
+        databaseContext.Files.Any(file => file.FileID == command.FileID).Should().BeTrue();
+        databaseContext.Files.SingleOrDefault(folder => folder.FileID == command.FileID)?.UnsafeName.Should().BeEquivalentTo(fileSample.UnsafeName);
     }
 
     [Fact]
     public void Handle_WhenEntityNotFound_ThenThrowEntityNotFoundException()
     {
         // Arrange.
-        var mappingProfile = new FolderCommandMappingConfiguration();
+        var mappingProfile = new FileCommandMappingConfiguration();
         var mapperConfiguration = new MapperConfiguration(configuration => configuration.AddProfile(mappingProfile));
         var mapper = new Mapper(mapperConfiguration);
 
@@ -133,7 +147,7 @@ public class UpdateFolderCommandTestSuit
 
         var folderSample = new FolderEntity
         {
-            FolderID = 1,
+            FolderID = 0,
             UserID = userSample.UserID,
             ParentID = default,
             TypeID = codeListItemSample.CodeListItemID,
@@ -142,8 +156,23 @@ public class UpdateFolderCommandTestSuit
             TotalCount = 10
         };
 
-        var commandHandler = new UpdateFolderCommandHandler(databaseContext, mapper);
-        var command = mapper.Map<UpdateFolderCommand>(folderSample);
+        _ = databaseContext.Folders.Add(folderSample);
+        _ = databaseContext.SaveChanges();
+
+        var fileSample = new FileEntity
+        {
+            FileID = 1,
+            FolderID = folderSample.FolderID,
+            ExtensionID = codeListItemSample.CodeListItemID,
+            MimeTypeID = codeListItemSample.CodeListItemID,
+            SafeName = "safename.pdf",
+            UnsafeName = "unsafename.pdf",
+            Location = Path.Combine(".\\", "Tests", "Temp"),
+            Size = 1_000
+        };
+
+        var commandHandler = new UpdateFileCommandHandler(databaseContext, mapper);
+        var command = mapper.Map<UpdateFileCommand>(fileSample);
         var cancellationToken = new CancellationToken();
 
         // Act.
@@ -155,7 +184,7 @@ public class UpdateFolderCommandTestSuit
         exception.Should().NotBeNull();
         exception.Should().BeOfType<EntityNotFoundException>();
 
-        (exception as EntityNotFoundException)?.EntityID.Should().BeEquivalentTo(folderSample.FolderID.ToString());
-        (exception as EntityNotFoundException)?.EntityTypeName.Should().BeEquivalentTo(nameof(FolderEntity));
+        (exception as EntityNotFoundException)?.EntityID.Should().BeEquivalentTo(fileSample.FileID.ToString());
+        (exception as EntityNotFoundException)?.EntityTypeName.Should().BeEquivalentTo(nameof(FileEntity));
     }
 }

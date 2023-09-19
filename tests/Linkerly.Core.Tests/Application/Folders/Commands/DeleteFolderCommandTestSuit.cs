@@ -12,7 +12,7 @@ namespace Linkerly.Core.Tests.Application.Folders.Commands;
 public class DeleteFolderCommandTestSuit
 {
     [Fact]
-    public void Handle_WhenRequestIsValid_ThenDeleteRecordInDatabase()
+    public void Handle_WhenRequestIsValid_ThenRemoveRecordFromDatabase()
     {
         // Arrange.
         var mappingProfile = new FolderCommandMappingConfiguration();
@@ -153,7 +153,7 @@ public class DeleteFolderCommandTestSuit
         exception.Should().NotBeNull();
         exception.Should().BeOfType<EntityNotFoundException>();
 
-        (exception as EntityNotFoundException)?.EntityID.Should().BeEquivalentTo(userSample.UserID.ToString());
+        (exception as EntityNotFoundException)?.EntityID.Should().BeEquivalentTo(folderSample.FolderID.ToString());
         (exception as EntityNotFoundException)?.EntityTypeName.Should().BeEquivalentTo(nameof(FolderEntity));
     }
 }
