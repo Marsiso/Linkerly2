@@ -25,6 +25,7 @@ public class CreateFolderCommandHandlerTestSuit
 
         var codeListSample = new CodeListEntity
         {
+            CodeListID = 0,
             Name = "codelistname"
         };
 
@@ -33,6 +34,7 @@ public class CreateFolderCommandHandlerTestSuit
 
         var codeListItemSample = new CodeListItemEntity
         {
+            CodeListItemID = 0,
             CodeListID = codeListSample.CodeListID,
             Value = "codelistvalue"
         };
@@ -42,6 +44,7 @@ public class CreateFolderCommandHandlerTestSuit
 
         var userSample = new UserEntity
         {
+            UserID = 0,
             Identifier = "123456789",
             Email = "givenname.familyname@example.com",
             HasEmailConfirmed = true,

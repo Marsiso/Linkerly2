@@ -26,6 +26,7 @@ public class UpdateFolderCommandHandlerTestSuit
 
         var codeListSample = new CodeListEntity
         {
+            CodeListID = 0,
             Name = "codelistname"
         };
 
@@ -34,6 +35,7 @@ public class UpdateFolderCommandHandlerTestSuit
 
         var codeListItemSample = new CodeListItemEntity
         {
+            CodeListItemID = 0,
             CodeListID = codeListSample.CodeListID,
             Value = "codelistvalue"
         };
@@ -43,6 +45,7 @@ public class UpdateFolderCommandHandlerTestSuit
 
         var userSample = new UserEntity
         {
+            UserID = 0,
             Identifier = "123456789",
             Email = "givenname.familyname@example.com",
             HasEmailConfirmed = true,
@@ -100,6 +103,7 @@ public class UpdateFolderCommandHandlerTestSuit
 
         var codeListSample = new CodeListEntity
         {
+            CodeListID = 0,
             Name = "codelistname"
         };
 
@@ -108,6 +112,7 @@ public class UpdateFolderCommandHandlerTestSuit
 
         var codeListItemSample = new CodeListItemEntity
         {
+            CodeListItemID = 0,
             CodeListID = codeListSample.CodeListID,
             Value = "codelistvalue"
         };
@@ -117,6 +122,7 @@ public class UpdateFolderCommandHandlerTestSuit
 
         var userSample = new UserEntity
         {
+            UserID = 0,
             Identifier = "123456789",
             Email = "givenname.familyname@example.com",
             HasEmailConfirmed = true,
