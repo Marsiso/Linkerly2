@@ -7,9 +7,9 @@ namespace Linkerly.Core.Application.Users.Queries;
 
 public class GetUserQuery : IQuery<UserEntity?>
 {
-    public GetUserQuery(int userId)
+    public GetUserQuery(int userID)
     {
-        UserID = userId;
+        UserID = userID;
     }
 
     public int UserID { get; }
