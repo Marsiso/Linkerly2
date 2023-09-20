@@ -15,7 +15,7 @@ public class GetAllSubfoldersQuery : IQuery<IEnumerable<FolderEntity>>
     public int ParentFolderID { get; }
 }
 
-public class GetAllFolderFilesQueryHandler : IQueryHandler<GetAllSubfoldersQuery, IEnumerable<FolderEntity>>
+public class GetAllSubfoldersQueryHandler : IQueryHandler<GetAllSubfoldersQuery, IEnumerable<FolderEntity>>
 {
     private static readonly Func<CloudContext, int, IEnumerable<FolderEntity>> _query = EF.CompileQuery((CloudContext databaseContext, int parentFolderID) =>
         databaseContext.Folders
@@ -25,7 +25,7 @@ public class GetAllFolderFilesQueryHandler : IQueryHandler<GetAllSubfoldersQuery
 
     private readonly CloudContext _databaseContext;
 
-    public GetAllFolderFilesQueryHandler(CloudContext databaseContext)
+    public GetAllSubfoldersQueryHandler(CloudContext databaseContext)
     {
         _databaseContext = databaseContext;
     }
