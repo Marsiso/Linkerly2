@@ -20,8 +20,7 @@ public class GetAllSubfoldersQueryHandler : IQueryHandler<GetAllSubfoldersQuery,
     private static readonly Func<CloudContext, int, IEnumerable<FolderEntity>> _query = EF.CompileQuery((CloudContext databaseContext, int parentFolderID) =>
         databaseContext.Folders
             .AsTracking()
-            .Where(folder => folder.ParentID == parentFolderID)
-            .AsEnumerable());
+            .Where(folder => folder.ParentID == parentFolderID));
 
     private readonly CloudContext _databaseContext;
 
